@@ -71,6 +71,7 @@ const trackNameMapping: { [key: string]: string } = {
   brazzaville: "Brazzaville",
   estoril: "Autódromo Fernanda Pires da Silva (Estoril) By Nanoseb",
   tigre: "Circuito Nacional El Tigre By Nanoseb",
+  mugello: "Autodromo Internazionale del Mugello by Quest",
 };
 
 export const bestTimes: { [key: string]: [number, string, string] } = {
@@ -166,6 +167,7 @@ export const bestTimes: { [key: string]: [number, string, string] } = {
   brazzaville: [999.99, "undefined", "Brazzaville"],
   estoril: [999.99, "undefined", "Autódromo Fernanda Pires da Silva (Estoril) By Nanoseb"],
   tigre: [999.99, "undefined", "Circuito Nacional El Tigre By Nanoseb"],
+  mugello: [999.99, "undefined", "Autodromo Internazionale del Mugello by Quest"],
 };
 export const getAbbreviatedTrackName = (
   fullTrackName: string,
