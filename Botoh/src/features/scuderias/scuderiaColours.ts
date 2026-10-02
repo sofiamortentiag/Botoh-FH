@@ -26,7 +26,7 @@ export enum ScuderiaColors {
   PANCHITOS = 0x1b1b1b,
   FERRARI = 0xE32119,
   CADILLAC = 0xd0d1d3,
-  AUDI = 0x909090,
+  LIGIER = 0x132451,
   HRT = 0xDAA520,
   WILLIAMS = 0x00A0DD,
   FORMULA2 = 0X272EF5,

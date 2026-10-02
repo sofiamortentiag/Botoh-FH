@@ -11,10 +11,10 @@ import { Genske } from "./scuderia/genske";
 import { Gorsche } from "./scuderia/gorsche";
 import { Hispalis } from "./scuderia/hispalis";
 import { Lotus } from "./scuderia/lotus";
-import { Panchitos } from "./scuderia/panchitos";
+import { Toyota } from "./scuderia/toyota";
 import { Ferrari } from "./scuderia/ferrari";
 import { Cadillac } from "./scuderia/cadillac";
-import { Audi } from "./scuderia/audi";
+import { Ligier } from "./scuderia/ligier";
 import { Hrt } from "./scuderia/hrt";
 import { Williams } from "./scuderia/williams";
 import { Formula2 } from "./scuderia/f2";
@@ -122,10 +122,10 @@ export const leagueScuderia: { [key: string]: leagueScuderia } = {
   Gorsche,
   Hispalis,
   Lotus,
-  Panchitos,
+  Toyota,
   Ferrari,
   Cadillac,
-  Audi,
+  Ligier,
   Hrt,
   Williams,
   Formula2,

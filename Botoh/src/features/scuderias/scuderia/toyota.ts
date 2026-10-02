@@ -6,8 +6,8 @@ import { ScuderiaColors } from '../scuderiaColours';
 import { leagueScuderia } from '../scuderias';
 import { Suspension } from '../tyres';
 
-export const PanchitosEngine: Engine = {
-  name: 'Panchitos Engine',
+export const ToyotaEngine: Engine = {
+  name: 'Toyota Engine',
   initialAccelerationNerf: 0,
   medialAccelerationNerf: 0,
   finalAccelerationNerf: 0,
@@ -15,24 +15,24 @@ export const PanchitosEngine: Engine = {
   confiability: 100,
 };
 
-export const PanchitosChassis: Chassis = {
-  name: 'Panchitos Chassis',
+export const ToyotaChassis: Chassis = {
+  name: 'Toyota Chassis',
   accelerationNerf: 0,
   slipstreamNerf: 0,
   dirtyAirBoost: 0,
   confiability: 100,
 };
 
-export const PanchitosBatery: Batery = {
-  name: 'Panchitos Batery',
+export const ToyotaBatery: Batery = {
+  name: 'Toyota Batery',
   ERSConsputionReduction: 0,
   ERSSpeedBoost: 0,
   ERSChargeBoost: 0,
   confiability: 100,
 };
 
-export const PanchitosSuspension: Suspension = {
-  name: 'Panchitos Suspension',
+export const ToyotaSuspension: Suspension = {
+  name: 'Toyota Suspension',
   tyreDurabilityBoost: 0,
   tyreSpeedDegradatedBoost: 0,
   peakTimeBoost: 0,
@@ -41,20 +41,20 @@ export const PanchitosSuspension: Suspension = {
   confiability: 100,
 };
 
-export const PanchitosPitCrew: PitCrew = {
-  name: 'Panchitos Pit Crew',
+export const ToyotaPitCrew: PitCrew = {
+  name: 'Toyota Pit Crew',
   errorChanceReduction: 0,
   fastPitChanceBoost: 0,
   normalPitSpeedTimeBoost: 0,
 };
 
-export const Panchitos: leagueScuderia = {
-  name: 'Panchitos',
-  tag: 'PAN',
-  color: ScuderiaColors.PANCHITOS,
-  engine: PanchitosEngine,
-  chassis: PanchitosChassis,
-  batery: PanchitosBatery,
-  suspension: PanchitosSuspension,
-  pitCrew: PanchitosPitCrew,
+export const Toyota: leagueScuderia = {
+  name: 'Toyota',
+  tag: 'TOY',
+  color: ScuderiaColors.TOYOSSI,
+  engine: ToyotaEngine,
+  chassis: ToyotaChassis,
+  batery: ToyotaBatery,
+  suspension: ToyotaSuspension,
+  pitCrew: ToyotaPitCrew,
 };

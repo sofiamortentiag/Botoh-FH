@@ -6,8 +6,8 @@ import { ScuderiaColors } from '../scuderiaColours';
 import { leagueScuderia } from '../scuderias';
 import { Suspension } from '../tyres';
 
-export const AudiEngine: Engine = {
-  name: 'Audi Engine',
+export const LigierEngine: Engine = {
+  name: 'Ligier Engine',
   initialAccelerationNerf: 0,
   medialAccelerationNerf: 0,
   finalAccelerationNerf: 0,
@@ -15,24 +15,24 @@ export const AudiEngine: Engine = {
   confiability: 100,
 };
 
-export const AudiChassis: Chassis = {
-  name: 'Audi Chassis',
+export const LigierChassis: Chassis = {
+  name: 'Ligier Chassis',
   accelerationNerf: 0,
   slipstreamNerf: 0,
   dirtyAirBoost: 0,
   confiability: 100,
 };
 
-export const AudiBatery: Batery = {
-  name: 'Audi Batery',
+export const LigierBatery: Batery = {
+  name: 'Ligier Batery',
   ERSConsputionReduction: 0,
   ERSSpeedBoost: 0,
   ERSChargeBoost: 0,
   confiability: 100,
 };
 
-export const AudiSuspension: Suspension = {
-  name: 'Audi Suspension',
+export const LigierSuspension: Suspension = {
+  name: 'Ligier Suspension',
   tyreDurabilityBoost: 0,
   tyreSpeedDegradatedBoost: 0,
   peakTimeBoost: 0,
@@ -41,20 +41,20 @@ export const AudiSuspension: Suspension = {
   confiability: 100,
 };
 
-export const AudiPitCrew: PitCrew = {
-  name: 'Audi Pit Crew',
+export const LigierPitCrew: PitCrew = {
+  name: 'Ligier Pit Crew',
   errorChanceReduction: 0,
   fastPitChanceBoost: 0,
   normalPitSpeedTimeBoost: 0,
 };
 
-export const Audi: leagueScuderia = {
-  name: 'Audi',
-  tag: 'AUD',
-  color: ScuderiaColors.AUDI,
-  engine: AudiEngine,
-  chassis: AudiChassis,
-  batery: AudiBatery,
-  suspension: AudiSuspension,
-  pitCrew: AudiPitCrew,
+export const Ligier: leagueScuderia = {
+  name: 'Ligier',
+  tag: 'LIG',
+  color: ScuderiaColors.LIGIER,
+  engine: LigierEngine,
+  chassis: LigierChassis,
+  batery: LigierBatery,
+  suspension: LigierSuspension,
+  pitCrew: LigierPitCrew,
 };
