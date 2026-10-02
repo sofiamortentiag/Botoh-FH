@@ -1,0 +1,229 @@
+import { log } from "../features/discord/logger";;
+
+const trackNameMapping: { [key: string]: string } = {
+  melbourne: "Albert-Park Melbourne Circuit - By Ximb",
+  imola: "Autodromo Imola - By Ximb",
+  sepang: "Sepang F1 International Circuit - By Ximb",
+  bahrein: "Sakhir Bahrain International Circuit - By Ximb",
+  sochi: "Sochi Autodrom - By Ximb",
+  monaco: "Circuit de Monaco - By Ximb",
+  valencia: "Valencia Street Circuit - By Ximb",
+  paulRicard: "Paul Ricard Circuit - By Ximb",
+  silverstone: "Silverstone Circuit - By Ximb",
+  spa: "Spa-Francorchamps - By Ximb",
+  istanbul: "İstanbul Park - By Ximb",
+  nurburgring: "Aramco Grosser Preis der Eifel - By Ximb",
+  monza: "Autodromo Nazionale di Monza - By Ximb",
+  canada: "Circuit Gilles Villeneuve - By Ximb",
+  austin: "United States Grand Prix - By Ximb",
+  shanghai: "Shanghai International Circuit - By Ximb",
+  suzuka: "Suzuka International Circuit - By Ximb",
+  interlagos: "Autodromo Interlagos - By Ximb",
+  baku: "Baku City Circuit - By Ximb",
+  argentina: "Autodromo Oscar Alfredo Galvez - By Ximb",
+  marinaBay: "Marina Bay Street Circuit - By Ximb",
+  jeddah: "Jeddah Street Circuit - By Ximb",
+  yasMarina: "Yas Marina Circuit - By Ximb",
+  yasMarinaNano: "Yas Marina Circuit By Nanoseb",
+  hockenheimring: "Hockenheimring - By Ximb",
+  fuji: "Fuji International - By Ximb",
+  hungaroing: "Hungaroring - By Ximb",
+  mexico: "Mexico City - Autodromo Hermanos Rodriquez By Ximb",
+  austria: "Redbull Ring by Rodri",
+  laguna_seca: "Laguna Seca by Rodri",
+  balaton: "Balaton Park by Rodri",
+  nurburgringNano: "Nurburgring GP By Nanoseb",
+  hungaroingNano: "hungaroring By Nanoseb",
+  indianapolis: "Indianapolis Motor Speedway - By Ximb",
+  miami: "Miami by Rodri",
+  las_vegas: "Las Vegas Strip Circuit - By Ximb",
+  zandvoort: "Zandvoort by Rodri",
+  chile: "Autodromo Internacional de Codegua By Nanoseb",
+  jarama: "Circuito de Madrid Jarama By Nanoseb",
+  brands_hatch: "Brands Hatch By Nanoseb",
+  barcelona: "Circuit de Barcelona-Catalunya by Rodri",
+  daytona: "24H Daytona edited by Rodri&Samusca",
+  cano: "Circuito Urbano de La Villa Cano - By Ximb",
+  virginia: "Virginia International Raceway by DavidMC49",
+  tanga: "Tanga Automobile by PYOTER",
+  tandil: "Tandil City by Metilazo",
+  colorado: "Colorado Street Circuit by New Era",
+  canada_nano: "Circuit Gilles Villeneuve By Nanoseb",
+  autodromo_nanoseb: "Autodromo Nanoseb By Nanoseb",
+  dubai: "Dubai Autodrome By Nanoseb",
+  grecia: "Autodromo Grecia By Nanoseb",
+  monaco_nano: "Circuit de Monaco By Nanoseb",
+  interlagos_nanoseb: "Autodromo Jose Carlos Pace By Nanoseb",
+  bahrain_clic: "FH Bahrain by Cliquot",
+  imola_old:
+    "Enzo and Dino Ferrari International Circuit 1994 (Imola 1994) By Nanoseb",
+  indianapolis_road: "Indianapolis Motor Speedway By Nanoseb",
+  bmw_ring: "BMW Ring By Nanoseb",
+  hungary_nano: "Hungaroring By Nanoseb",
+  spaNano: "Circuit de Spa-Francorchamps By Nanoseb",
+  baku_clic: "Baku - Clicquot",
+  cano_sexcuit: "Cano Sexcuit by Rodri",
+  sroda: "Sroda Track",
+    le_mans: "Le Mans By Nanoseb Remake",
+  river: "Circuito Antonio V. Liberti by New Era",
+  balaton_haxmaps: "Balaton Park Circuit by Liberty from HaxMaps",
+  hemmingsen: "Hemmingsen-banen by Rodri",
+  brazzaville: "Brazzaville",
+  estoril: "Autódromo Fernanda Pires da Silva (Estoril) By Nanoseb",
+  tigre: "Circuito Nacional El Tigre By Nanoseb",
+  mugello: "Autodromo Internazionale del Mugello by Quest",
+};
+
+export const bestTimes: { [key: string]: [number, string, string] } = {
+  melbourne: [27.6, "Lando Canorris", trackNameMapping["melbourne"]],
+  imola: [39.967, "Ximbastian Vettel", trackNameMapping["imola"]],
+  sepang: [49.65, "Lib Wallard ", trackNameMapping["sepang"]],
+  bahrein: [32.884, "Alberto Ulasscari", trackNameMapping["bahrein"]],
+  sochi: [40.15, "Alberto Ulasscari", trackNameMapping["sochi"]],
+  monaco: [34.442, "Liberty", trackNameMapping["monaco"]],
+  valencia: [44.433, "Alberto Ulasscari", trackNameMapping["valencia"]],
+  paulRicard: [42.567, "Ximbastian Vettel", trackNameMapping["paulRicard"]],
+  silverstone: [41.483, "Alberto Ulasscari", trackNameMapping["silverstone"]],
+  spa: [56.0, "Alberto Ulasscari", trackNameMapping["spa"]],
+  istanbul: [999.999, "Artistic", trackNameMapping["istanbul"]],
+  nurburgring: [39.433, "HiroShiryu Fushida", trackNameMapping["nurburgring"]],
+  monza: [45.933, "Alberto Ulasscari", trackNameMapping["monza"]],
+  canada: [37.716, "Alberto Ulasscari", trackNameMapping["canada"]],
+  austin: [49.783, "Franco ColaSplinter", trackNameMapping["austin"]],
+  shanghai: [44.101, "Franco ColaSplinter", trackNameMapping["shanghai"]],
+  suzuka: [39.35, "Franco ColaSplinter", trackNameMapping["suzuka"]],
+  interlagos: [36.3, "Franco ColaSplinter", trackNameMapping["interlagos"]],
+  baku: [46.749, "Alberto Ulasscari", trackNameMapping["baku"]],
+  argentina: [43.025, "Franco ColaSplinter", trackNameMapping["argentina"]],
+  marinaBay: [48.717, "Ximbastian Vettel", trackNameMapping["marinaBay"]],
+  jeddah: [43.433, "HiroShiryu Fushida", trackNameMapping["jeddah"]],
+  yasMarina: [39.733, "HiroShiryu Fushida", trackNameMapping["yasMarina"]],
+  yasMarinaNano: [999.999, "undefined", trackNameMapping["yasMarina"]],
+  hockenheimring: [
+    999.233,
+    "Jean Dany-Vegne",
+    trackNameMapping["hockenheimring"],
+  ],
+  fuji: [37.183, "Ximbastian Vettel", trackNameMapping["fuji"]],
+  hungaroing: [42.7, "Ximb", trackNameMapping["hungaroing"]],
+  mexico: [37.603, "Ximbastian Vettel", trackNameMapping["mexico"]],
+  austria: [30.916, "Jean Dany Vegne", trackNameMapping["austria"]],
+  laguna_seca: [34.331, "Cano", trackNameMapping["laguna_seca"]],
+  balaton: [39.081, "Rodri", trackNameMapping["nurburgringNano"]],
+  hungaroingNano: [999.999, "undefined", trackNameMapping["hungaroingNano"]],
+  indianapolis: [30.5, "Gabriel Schumacchio", trackNameMapping["indianapolis"]],
+  miami: [43.05, "Ximbastian Vettel", trackNameMapping["miami"]],
+  las_vegas: [43.569, "Ximbastian Vettel", "Las Vegas Strip Circuit - By Ximb"],
+  zandvoort: [37.358, "Ximbastian Vettel", "Zandvoort by Rodri"],
+  chile: [999.99, "undefined", "Autodromo Internacional de Codegua By Nanoseb"],
+  jarama: [999.99, "undefined", "Circuito de Madrid Jarama By Nanoseb"],
+  brands_hatch: [999.99, "undefined", "Brands Hatch By Nanoseb"],
+  barcelona: [
+    37.7,
+    "Ximbastian Vettel",
+    "Circuit de Barcelona-Catalunya by Rodri",
+  ],
+  daytona: [81.234, "Rodri&Samusca", "24H Daytona edited by Rodri&Samusca"],
+  cano: [
+    49.764,
+    "Ximbastian Vettel",
+    "Circuito Urbano de La Villa Cano - By Ximb",
+  ],
+  virginia: [999.999, "nobody", "Virginia International Raceway by DavidMC49"],
+  tanga: [999.999, "nobody", "Tanga Automobile by PYOTER"],
+  tandil: [999.999, "nobody", "Tandil City by Metilazo"],
+  colorado: [999.999, "nobody", "Colorado Street Circuit by New Era"],
+  canada_nano: [41.15, "Joninho", "Circuit Gilles Villeneuve By Nanoseb"],
+  autodromo_nanoseb: [999.99, "undefined", "Autodromo Nanoseb By Nanoseb"],
+  dubai: [999.99, "undefined", "Dubai Autodrome By Nanoseb"],
+  grecia: [64.681, "Ximbastian Vettel", "Autodromo Grecia By Nanoseb"],
+  monaco_nano: [999.99, "undefined", "Circuit de Monaco By Nanoseb"],
+  interlagos_nanoseb: [
+    999.99,
+    "undefined",
+    "Autodromo Jose Carlos Pace By Nanoseb",
+  ],
+  bahrain_clic: [48.567, "Cliquot", "FH Bahrain by Cliquot"],
+  imola_old: [
+    999.99,
+    "undefined",
+    "Enzo and Dino Ferrari International Circuit 1994 (Imola 1994) By Nanoseb",
+  ],
+  indianapolis_road: [
+    999.99,
+    "undefined",
+    "Indianapolis Motor Speedway By Nanoseb",
+  ],
+  bmw_ring: [999.99, "undefined", "BMW Ring By Nanoseb"],
+  hungary_nano: [999.99, "undefined", "Hungaroring By Nanoseb"],
+  spaNano: [48.609, "BL", "Circuit de Spa-Francorchamps By Nanoseb"],
+  baku_clic: [44.000, "Cliquot", "Baku - Clicquot"],
+  cano_sexcuit: [999.99, "undefined", "Cano Sexcuit by Rodri"],
+  sroda: [999.99, "undefined", "Sroda Track"],
+  le_mans: [999.99, "undefined", "Le Mans By Nanoseb Remake"],
+  river: [999.99, "undefined", "Circuito Antonio V. Liberti by New Era"],
+  balaton_haxmaps: [999.99, "undefined", "Balaton Park Circuit by Liberty from HaxMaps"],
+  hemmingsen: [999.99, "undefined", "Hemmingsen-banen by Rodri"],
+  brazzaville: [999.99, "undefined", "Brazzaville"],
+  estoril: [999.99, "undefined", "Autódromo Fernanda Pires da Silva (Estoril) By Nanoseb"],
+  tigre: [999.99, "undefined", "Circuito Nacional El Tigre By Nanoseb"],
+  mugello: [999.99, "undefined", "Autodromo Internazionale del Mugello by Quest"],
+};
+export const getAbbreviatedTrackName = (
+  fullTrackName: string,
+): string | undefined => {
+  return Object.keys(trackNameMapping).find(
+    (key) => trackNameMapping[key] === fullTrackName,
+  );
+};
+
+export const getBestTime = (
+  trackName: string,
+): [number, string, string] | null => {
+  const abbreviatedTrackName = getAbbreviatedTrackName(trackName) || trackName;
+
+  if (trackNameMapping.hasOwnProperty(abbreviatedTrackName)) {
+    return bestTimes[abbreviatedTrackName];
+  }
+
+  return null;
+};
+
+export const updateBestTime = (
+  trackName: string,
+  newTime: number,
+  driverName: string,
+) => {
+  const abbreviatedTrackName = getAbbreviatedTrackName(trackName) || trackName;
+
+  if (trackNameMapping.hasOwnProperty(abbreviatedTrackName)) {
+    const currentBestTime = bestTimes[abbreviatedTrackName][0];
+
+    if (currentBestTime === 999.999 || newTime < currentBestTime) {
+      const circuitName = trackNameMapping[abbreviatedTrackName];
+      bestTimes[abbreviatedTrackName] = [newTime, driverName, circuitName];
+    } else {
+    }
+  } else {
+    log(
+      `The track ${abbreviatedTrackName} wasn't found on the mapping to update the best time.`,
+    );
+  }
+};
+
+export const clearBestTime = (
+  trackName: string,
+  newTime: number,
+  driverName: string,
+) => {
+  const abbreviatedTrackName = getAbbreviatedTrackName(trackName) || trackName;
+
+  if (trackNameMapping.hasOwnProperty(abbreviatedTrackName)) {
+    const circuitName = trackNameMapping[abbreviatedTrackName];
+    bestTimes[abbreviatedTrackName] = [newTime, driverName, circuitName];
+  } else {
+    log(
+      `The track ${abbreviatedTrackName} wasn't found on the mapping to clear the best time.`,
+    );
+  }
+};

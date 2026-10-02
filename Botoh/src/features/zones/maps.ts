@@ -1,0 +1,285 @@
+import { sendErrorMessage, sendSuccessMessage } from "../chat/chat";
+import { MESSAGES } from "../chat/messages";
+import { Circuit } from "../../circuits/Circuit";
+
+import { PODIUM } from "../../circuits/podium/podium";
+
+import { MELBOURNE } from "../../circuits/melbourne/melbourne";
+import { BAKU } from "../../circuits/baku/baku";
+import { SPA } from "../../circuits/spa/spa";
+import { IMOLA } from "../../circuits/imola/imola";
+import { NURBURGRING } from "../../circuits/nurburgring/nurburgring";
+import { SHANGHAI } from "../../circuits/shanghai/shanghai";
+import { AUSTIN } from "../../circuits/austin/austin";
+import { MONZA } from "../../circuits/monza/monza";
+import { CANADA } from "../../circuits/canada/canada";
+import { SEPANG } from "../../circuits/sepang/sepang";
+import { BAHRAIN } from "../../circuits/bahrain/bahrain";
+import { VALENCIA } from "../../circuits/valencia/valencia";
+import { SILVERSTONE } from "../../circuits/silverstone/silverstone";
+import { MONACO } from "../../circuits/monaco/monaco";
+import { SOCHI } from "../../circuits/sochi/sochi";
+import { PAUL_RICARD } from "../../circuits/paul_ricard/paul_ricard";
+import { ISTANBUL } from "../../circuits/istanbul/istanbul";
+import { SUZUKA } from "../../circuits/suzuka/suzuka";
+import { INTERLAGOS } from "../../circuits/interlagos/interlagos";
+import { ARGENTINA } from "../../circuits/argentina/argentina";
+
+import { MARINA_BAY } from "../../circuits/marina_bay/marina_bay";
+import { JEDDAH } from "../../circuits/jeddah/jeddah";
+import { ABU_DHABI } from "../../circuits/abu_dhabi/abu_dhabi";
+import { HOCKEN } from "../../circuits/hocken/hocken";
+import { FUJI } from "../../circuits/fuji/fuji";
+import { HUNGARY } from "../../circuits/hungary/hungary";
+import { MEXICO } from "../../circuits/mexico/mexico";
+
+import { AUSTRIA } from "../../circuits/austria/austria";
+import { LAGUNA_SECA } from "../../circuits/laguna_seca/laguna_seca";
+import { BALATON } from "../../circuits/balaton/balaton";
+import { MIAMI } from "../../circuits/miami/miami";
+
+import { NURBURGRINGNANO } from "../../circuits/nurburgring/nurburgringNano";
+
+import { INDIANAPOLIS } from "../../circuits/indianapolis/indianapolis";
+import { INDIANAPOLISLEAGUE } from "../../circuits/indianapolis/indianapolisLeague";
+
+import { LEAGUE_MODE } from "../hostLeague/leagueMode";
+
+import { SUZUKAPUBLIC } from "../../circuits/suzuka/suzukaPublic";
+import { MELBOURNEPUBLIC } from "../../circuits/melbourne/melbournePublic";
+import { BAKUPUBLIC } from "../../circuits/baku/bakuPublic";
+import { SPAPUBLIC } from "../../circuits/spa/spaPublic";
+import { IMOLAPUBLIC } from "../../circuits/imola/imolaPublic";
+import { NURBURGRINGPUBLIC } from "../../circuits/nurburgring/nurburgringPublic";
+import { SHANGHAIPUBLIC } from "../../circuits/shanghai/shanghaiPublic";
+import { AUSTINPUBLIC } from "../../circuits/austin/austinPublic";
+import { MONZAPUBLIC } from "../../circuits/monza/monzaPublic";
+import { CANADAPUBLIC } from "../../circuits/canada/canadaPublic";
+import { SEPANGPUBLIC } from "../../circuits/sepang/sepangPublic";
+import { BAHRAINPUBLIC } from "../../circuits/bahrain/bahrainPublic";
+import { VALENCIAPUBLIC } from "../../circuits/valencia/valenciaPublic";
+import { SILVERSTONEPUBLIC } from "../../circuits/silverstone/silverstonePublic";
+import { MONACOPUBLIC } from "../../circuits/monaco/monacoPublic";
+import { SOCHIPUBLIC } from "../../circuits/sochi/sochiPublic";
+import { PAUL_RICARDPUBLIC } from "../../circuits/paul_ricard/paul_ricardPublic";
+import { ARGENTINAPUBLIC } from "../../circuits/argentina/argentinaPublic";
+import { ISTANBULPUBLIC } from "../../circuits/istanbul/istanbulPublic";
+import { MARINA_BAYPUBLIC } from "../../circuits/marina_bay/marina_bayPublic";
+import { JEDDAHPUBLIC } from "../../circuits/jeddah/jeddahPublic";
+import { ABU_DHABIPUBLIC } from "../../circuits/abu_dhabi/abu_dhabiPublic";
+import { HOCKENPUBLIC } from "../../circuits/hocken/hockenPublic";
+import { INTERLAGOSLEAGUE } from "../../circuits/interlagos/interlagosLeague";
+import { WAITROOM } from "../../circuits/waitRoom/waitRoom";
+
+import { WAITROOMQUALY } from "../../circuits/waitRoom/waitRoomQualy";
+import { gameMode, GameMode } from "../changeGameState/changeGameModes";
+import { LAS_VEGAS } from "../../circuits/las_vegas/las_vegas";
+import { LAS_VEGASPUBLIC } from "../../circuits/las_vegas/las_vegasPublic";
+import { ZANDVOORT } from "../../circuits/zandvoort/zandvoort";
+import { CHILE } from "../../circuits/chile/chile";
+import { JARAMA } from "../../circuits/jarama/jarama";
+import { BRANDS_HATCH } from "../../circuits/brands_hatch/brands_hatch";
+import { BARCELONA } from "../../circuits/barcelona/barcelona";
+import { DAYTONA } from "../../circuits/daytona/daytona";
+import { CANOPUBLIC } from "../../circuits/cano/canoPublic";
+import { VIRGINIA } from "../../circuits/virginia/virginia";
+import { YAS_MARINA_NANO } from "../../circuits/abu_dhabi/yas_marina_nano";
+import { TANGA } from "../../circuits/tanga/tanga";
+import { TANDIL } from "../../circuits/tandil/tandil";
+import { COLORADO } from "../../circuits/colorado/colorado";
+import { CANADA_NANO } from "../../circuits/canada_nano/canada_nano";
+import { AUTODROMO_NANOSEB } from "../../circuits/autodromo_nanoseb/autodromo_nanoseb";
+import { DUBAI } from "../../circuits/dubai/dubai";
+import { GRECIA } from "../../circuits/grecia/grecia";
+import { MONACO_NANO } from "../../circuits/monaco_nano/monaco_nano";
+import { INTERLAGOS_NANOSEB } from "../../circuits/interlagos_nanoseb/interlagos_nanoseb";
+import { BAHRAIN_CLIC } from "../../circuits/bahrain_clic/bahrain_clic";
+import { IMOLA_OLD } from "../../circuits/imola_old/imola_old";
+import { INDIANAPOLIS_ROAD } from "../../circuits/indianapolis_road/indianapolis_road";
+import { BMW_RING } from "../../circuits/bmw_ring/bmw_ring";
+import { HUNGARY_NANO } from "../../circuits/hungary_nano/hungary_nano";
+import { SPANANO } from "../../circuits/spa/spaNano";
+import { BAKU_CLIC } from "../../circuits/baku/baku_clic";
+import { CANO } from "../../circuits/cano/cano";
+import { CANO_SEXCUIT } from "../../circuits/cano_sexcuit/cano_sexcuit";
+import { SRODA } from "../../circuits/sroda/sroda";
+import { LE_MANS } from "../../circuits/le_mans/le_mans";
+import { RIVER } from "../../circuits/argentina/river";
+import { BALATON_HAXMAPS } from "../../circuits/balaton/balaton_haxmaps";
+import { HEMMINGSEN } from "../../circuits/hemmingsen_banen/hemmingsen";
+import { BRAZZAVILLE } from "../../circuits/brazzaville/brazzaville";
+import { ESTORIL } from "../../circuits/estoril/estoril";
+import { TIGRE } from "../../circuits/tigre/tigre";
+import { MUGELLO } from "../../circuits/mugello/mugello";
+// import {DAYTONA} from "../circuits/daytona/daytona";
+// import {BARCELONA} from "../circuits/barcelona/barcelona";
+// import {MACAU} from "../circuits/macau/macau";
+// import {WALES} from "../circuits/wales/wales";
+// import {NETHERLANDS} from "../circuits/netherlands/netherlands";
+// import {ALGARVE} from "../circuits/algarve/algarve";
+// import {TARNOW} from "../circuits/tarnow/tarnow";
+
+export const CIRCUITS: Circuit[] = LEAGUE_MODE
+  ? [
+      SUZUKA,
+      MELBOURNE,
+      BAKU,
+      SPA,
+      IMOLA,
+      NURBURGRING,
+      SHANGHAI,
+      AUSTIN,
+      MONZA,
+      CANADA,
+      SEPANG,
+      BAHRAIN,
+      VALENCIA,
+      SILVERSTONE,
+      MONACO,
+      SOCHI,
+      PAUL_RICARD,
+      ISTANBUL,
+      INTERLAGOS,
+      ARGENTINA,
+      MARINA_BAY,
+      JEDDAH,
+      ABU_DHABI,
+      HOCKEN,
+      FUJI,
+      HUNGARY,
+      AUSTRIA,
+      LAGUNA_SECA,
+      BALATON,
+      MEXICO,
+      MIAMI,
+      NURBURGRINGNANO,
+      LAS_VEGAS,
+      INTERLAGOSLEAGUE,
+      ZANDVOORT,
+      INDIANAPOLIS,
+      CHILE,
+      JARAMA,
+      BRANDS_HATCH,
+      BARCELONA,
+      CANO,
+      VIRGINIA,
+      TANGA,
+      TANDIL,
+      COLORADO,
+      YAS_MARINA_NANO,
+      CANADA_NANO,
+      AUTODROMO_NANOSEB,
+      DUBAI,
+      GRECIA,
+      MONACO_NANO,
+      INTERLAGOS_NANOSEB,
+      BAHRAIN_CLIC,
+      IMOLA_OLD,
+      INDIANAPOLIS,
+      INDIANAPOLIS_ROAD,
+      BMW_RING,
+      HUNGARY_NANO,
+      SPANANO,
+      BAKU_CLIC,
+      CANO_SEXCUIT,
+      SRODA,
+      LE_MANS,
+      RIVER,
+      BALATON_HAXMAPS,
+      HEMMINGSEN,
+      BRAZZAVILLE,
+      ESTORIL,
+      TIGRE,
+      MUGELLO,
+      PODIUM,
+      WAITROOM,
+    ]
+  : [
+      SUZUKAPUBLIC,
+      MELBOURNEPUBLIC,
+      BAKUPUBLIC,
+      SPAPUBLIC,
+      IMOLAPUBLIC,
+      NURBURGRINGPUBLIC,
+      SHANGHAIPUBLIC,
+      AUSTINPUBLIC,
+      MONZAPUBLIC,
+      CANADAPUBLIC,
+      SEPANGPUBLIC,
+      BAHRAINPUBLIC,
+      VALENCIAPUBLIC,
+      SILVERSTONEPUBLIC,
+      MONACOPUBLIC,
+      SOCHIPUBLIC,
+      PAUL_RICARDPUBLIC,
+      ISTANBULPUBLIC,
+      INTERLAGOS,
+      ARGENTINAPUBLIC,
+      MARINA_BAYPUBLIC,
+      JEDDAHPUBLIC,
+      ABU_DHABIPUBLIC,
+      HOCKENPUBLIC,
+      FUJI,
+      HUNGARY,
+      BALATON,
+      AUSTRIA,
+      LAGUNA_SECA,
+      MEXICO,
+      MIAMI,
+      LAS_VEGASPUBLIC,
+      ZANDVOORT,
+      CHILE,
+      JARAMA,
+      BRANDS_HATCH,
+      BARCELONA,
+      CANOPUBLIC,
+      CANADA_NANO,
+      AUTODROMO_NANOSEB,
+      DUBAI,
+      GRECIA,
+      MONACO_NANO,
+      INTERLAGOS_NANOSEB,
+      BAHRAIN_CLIC,
+      IMOLA_OLD,
+      INDIANAPOLIS,
+      INDIANAPOLIS_ROAD,
+      BMW_RING,
+      HUNGARY_NANO,
+      SPANANO,
+      WAITROOM,
+      WAITROOMQUALY,
+    ];
+
+export let currentMapIndex = 0;
+function handleMapError(room: RoomObject) {
+  const admins = room.getPlayerList().filter((p) => p.admin);
+
+  if (admins.length >= 1) {
+    admins.forEach((p) => {
+      sendErrorMessage(room, MESSAGES.CHANGE_MAP_FAILURE(), p.id);
+    });
+    return;
+  }
+  sendErrorMessage(room, MESSAGES.CHANGE_MAP_FAILURE());
+}
+export function handleChangeMap(index: number, room: RoomObject) {
+  if (index < 0 || index >= CIRCUITS.length) {
+    handleMapError(room);
+    return;
+  }
+
+  try {
+    currentMapIndex = index;
+
+    room.setCustomStadium(CIRCUITS[currentMapIndex].map);
+
+    if (gameMode !== GameMode.WAITING) {
+      sendSuccessMessage(
+        room,
+        MESSAGES.CHANGE_MAP_SUCCESS(CIRCUITS[currentMapIndex].info.name),
+      );
+    }
+  } catch (error) {
+    handleMapError(room);
+  }
+}

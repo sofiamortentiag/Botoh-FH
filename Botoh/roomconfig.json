@@ -1,0 +1,16 @@
+{
+  "publicAdminPassword": "toh",
+  "publicModPassword": "mod",
+  "leagueAdminPassword": "mamaguevo",
+  "bans": ["90.94.201.31"],
+  "publicName": "🏎️ Formula 1 - FTOH 🏎️",
+  "leagueName": "🏎️ Formula 1 - FTOH 🏎️",
+  "haxbulaPublicName": "🏎️ Formula 1 - HAXBULA 🏎️",
+  "haxbulaLeagueName": "🏎️ Formula 1 - HAXBULA 🏎️",
+  "formulaHaxballPublicName": "Formula Haxball 🏎️💨🏁",
+  "formulaHaxballLeagueName": "Formula Haxball 🏎️💨🏁",
+  "maxPlayers": 26,
+  "roomPassword": null,
+  "afkKickTime": 27,
+  "afkAlertTime": 23
+}
