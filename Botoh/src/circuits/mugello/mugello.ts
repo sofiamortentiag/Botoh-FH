@@ -53,13 +53,13 @@ const MUGELLO_INFO: CircuitInfo = {
   pitlaneStart: {
     minX: -853,
     maxX: -823,
-    minY: 117,
+    minY: 177,
     maxY: 227,
   },
   pitlaneEnd: {
     minX: 103,
     maxX: 133,
-    minY: 117,
+    minY: 177,
     maxY: 227,
   },
   drsStart: [
