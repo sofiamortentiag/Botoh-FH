@@ -42,7 +42,15 @@ export interface ApiQualyData {
     name: string;
     team: string | null;
     bestLap: number;
+    gap: string;
+    active: boolean;
+    currentTire: string;
   }[];
+  bestLap?: {
+    playerName: string;
+    lapTime: number;
+    lapNumber?: number;
+  };
 }
 
 /**
@@ -89,21 +97,36 @@ function calculateRaceGap(currentIndex: number): string {
 /**
  * Send qualification standings to the haxball-league API (simplified data)
  */
-export async function sendQualyToApi(): Promise<boolean> {
+export function createQualyStandingsData(): ApiQualyData {
+  const qualyPlayers = getPlayersOrderedByQualiTime();
+  return {
+    timestamp: new Date().toISOString(),
+    sessionType: "qualy",
+    standings: qualyPlayers.map((p, idx) => ({
+      position: idx + 1,
+      name: p.name,
+      team: p.team ?? null,
+      bestLap: p.time,
+      gap:
+        idx === 0
+          ? "+0.000s"
+          : `+${(p.time - qualyPlayers[0].time).toFixed(3)}s`,
+      active: true,
+      currentTire: playerList[p.id]?.tires ?? Tires.SOFT,
+    })),
+    bestLap: qualyPlayers[0]
+      ? {
+          playerName: qualyPlayers[0].name,
+          lapTime: qualyPlayers[0].time,
+        }
+      : undefined,
+  };
+}
+
+export async function sendQualyToApi(
+  qualyData: ApiQualyData = createQualyStandingsData(),
+): Promise<boolean> {
   try {
-    const qualyPlayers = getPlayersOrderedByQualiTime();
-
-    const qualyData: ApiQualyData = {
-      timestamp: new Date().toISOString(),
-      sessionType: "qualy",
-      standings: qualyPlayers.map((p, idx) => ({
-        position: idx + 1,
-        name: p.name,
-        team: p.team ?? null,
-        bestLap: p.time,
-      })),
-    };
-
     const response = await fetch("https://haxball-league.vercel.app/api/posiciones", {
       method: "POST",
       headers: {
@@ -130,10 +153,13 @@ export async function sendQualyToApi(): Promise<boolean> {
 /**
  * Send qualification standings to API with retry logic
  */
-export async function sendQualyToApiWithRetry(maxRetries: number = 3): Promise<boolean> {
+export async function sendQualyToApiWithRetry(
+  maxRetries: number = 3,
+  qualyData: ApiQualyData = createQualyStandingsData(),
+): Promise<boolean> {
   for (let attempt = 1; attempt <= maxRetries; attempt++) {
     try {
-      const success = await sendQualyToApi();
+      const success = await sendQualyToApi(qualyData);
       if (success) {
         return true;
       }
@@ -157,42 +183,45 @@ export async function sendQualyToApiWithRetry(maxRetries: number = 3): Promise<b
 /**
  * Send race standings to the haxball-league API
  */
-export async function sendStandingsToApi(): Promise<boolean> {
+export function createRaceStandingsData(): ApiStandingsData {
+  const bestLap = getBestLap();
+  const bestPit = getBestPit();
+  return {
+    timestamp: new Date().toISOString(),
+    standings: positionList.map((p, idx) => {
+      const playerData = playerList[p.id];
+      return {
+        position: idx + 1,
+        name: p.name,
+        team: p.team ?? null,
+        laps: playerData?.currentLap ?? 0,
+        pits: p.pits,
+        bestLap: p.time,
+        gap: calculateRaceGap(idx),
+        totalTime: p.totalTime,
+        active: p.active,
+        currentTire: playerData?.tires ?? Tires.SOFT,
+        tireWear: playerData?.wear ?? 0,
+        lapsOnCurrentTire: playerData?.lapsOnCurrentTire ?? 0,
+      };
+    }),
+    bestLap: bestLap ? {
+      playerName: bestLap.playerName,
+      lapTime: bestLap.lapTime,
+      lapNumber: bestLap.lapNumber,
+    } : undefined,
+    bestPit: bestPit ? {
+      playerName: bestPit.playerName,
+      pitTime: bestPit.pitTime,
+      pitNumber: bestPit.pitNumber,
+    } : undefined,
+  };
+}
+
+export async function sendStandingsToApi(
+  standingsData: ApiStandingsData = createRaceStandingsData(),
+): Promise<boolean> {
   try {
-    const bestLap = getBestLap();
-    const bestPit = getBestPit();
-
-    const standingsData: ApiStandingsData = {
-      timestamp: new Date().toISOString(),
-      standings: positionList.map((p, idx) => {
-        const playerData = playerList[p.id];
-        return {
-          position: idx + 1,
-          name: p.name,
-          team: p.team ?? null,
-          laps: playerData?.currentLap ?? 0,
-          pits: p.pits,
-          bestLap: p.time,
-          gap: calculateRaceGap(idx),
-          totalTime: p.totalTime,
-          active: p.active,
-          currentTire: playerData?.tires ?? Tires.SOFT,
-          tireWear: playerData?.wear ?? 0,
-          lapsOnCurrentTire: playerData?.lapsOnCurrentTire ?? 0,
-        };
-      }),
-      bestLap: bestLap ? {
-        playerName: bestLap.playerName,
-        lapTime: bestLap.lapTime,
-        lapNumber: bestLap.lapNumber,
-      } : undefined,
-      bestPit: bestPit ? {
-        playerName: bestPit.playerName,
-        pitTime: bestPit.pitTime,
-        pitNumber: bestPit.pitNumber,
-      } : undefined,
-    };
-
     const response = await fetch("https://haxball-league.vercel.app/api/posiciones", {
       method: "POST",
       headers: {
@@ -219,10 +248,13 @@ export async function sendStandingsToApi(): Promise<boolean> {
 /**
  * Send standings to API with retry logic
  */
-export async function sendStandingsToApiWithRetry(maxRetries: number = 3): Promise<boolean> {
+export async function sendStandingsToApiWithRetry(
+  maxRetries: number = 3,
+  standingsData: ApiStandingsData = createRaceStandingsData(),
+): Promise<boolean> {
   for (let attempt = 1; attempt <= maxRetries; attempt++) {
     try {
-      const success = await sendStandingsToApi();
+      const success = await sendStandingsToApi(standingsData);
       if (success) {
         return true;
       }

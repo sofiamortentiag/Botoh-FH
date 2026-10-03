@@ -4,10 +4,26 @@ import { positionList } from "./positionList";
 import { playerList } from "../../../changePlayerState/playerList";
 import { getBestPit } from "../../../tires&pits/trackBestPit";
 import { getBestLap } from "../../../zones/laps/trackBestLap";
-import { sendStandingsToApiWithRetry, sendQualyToApiWithRetry } from "./standingsApi";
+import {
+  ApiQualyData,
+  ApiStandingsData,
+  createQualyStandingsData,
+  createRaceStandingsData,
+  sendStandingsToApiWithRetry,
+  sendQualyToApiWithRetry,
+} from "./standingsApi";
 import { GeneralGameMode, generalGameMode } from "../../../changeGameState/changeGameModes";
 import { getPlayersOrderedByQualiTime } from "../qualy/playerTime";
 import { setStandingsRefreshHandler } from "./standingsRefresh";
+
+let apiRefreshTimer: ReturnType<typeof setTimeout> | null = null;
+let apiRefreshInFlight = false;
+let pendingApiUpdate:
+  | { mode: GeneralGameMode.GENERAL_QUALY; data: ApiQualyData }
+  | { mode: GeneralGameMode.GENERAL_RACE; data: ApiStandingsData }
+  | null = null;
+let lastApiRefreshAt = 0;
+const LIVE_API_REFRESH_INTERVAL_MS = 1500;
 
 export interface StandingsRow {
   position: number;
@@ -339,12 +355,61 @@ export function saveStandingsHtml(destFile?: string): string {
   }
 }
 
+function scheduleLiveApiRefresh() {
+  if (
+    generalGameMode !== GeneralGameMode.GENERAL_RACE &&
+    generalGameMode !== GeneralGameMode.GENERAL_QUALY
+  ) {
+    return;
+  }
+
+  pendingApiUpdate =
+    generalGameMode === GeneralGameMode.GENERAL_QUALY
+      ? { mode: GeneralGameMode.GENERAL_QUALY, data: createQualyStandingsData() }
+      : { mode: GeneralGameMode.GENERAL_RACE, data: createRaceStandingsData() };
+  schedulePendingApiUpdate();
+}
+
+function schedulePendingApiUpdate() {
+  if (!pendingApiUpdate || apiRefreshTimer || apiRefreshInFlight) return;
+
+  const delay = Math.max(
+    0,
+    LIVE_API_REFRESH_INTERVAL_MS - (Date.now() - lastApiRefreshAt),
+  );
+
+  apiRefreshTimer = setTimeout(async () => {
+    apiRefreshTimer = null;
+    if (apiRefreshInFlight) return;
+
+    const update = pendingApiUpdate;
+    if (!update) return;
+
+    apiRefreshInFlight = true;
+    pendingApiUpdate = null;
+    lastApiRefreshAt = Date.now();
+    try {
+      const sent =
+        update.mode === GeneralGameMode.GENERAL_QUALY
+          ? await sendQualyToApiWithRetry(3, update.data)
+          : await sendStandingsToApiWithRetry(3, update.data);
+      if (!sent) console.error("Live standings update was not accepted by Vercel");
+    } catch (err) {
+      console.error("Failed to send live standings to Vercel:", err);
+    } finally {
+      apiRefreshInFlight = false;
+      if (pendingApiUpdate) schedulePendingApiUpdate();
+    }
+  }, delay);
+}
+
 setStandingsRefreshHandler(() => {
   try {
     saveStandingsHtml();
   } catch (err) {
     console.error("Failed to refresh standings HTML:", err);
   }
+  scheduleLiveApiRefresh();
 });
 
 /**
