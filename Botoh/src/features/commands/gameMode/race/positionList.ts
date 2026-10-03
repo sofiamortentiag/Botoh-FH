@@ -1,4 +1,5 @@
 import { PitsInfo, playerList } from "../../../changePlayerState/playerList";
+import { refreshStandingsHtml } from "./standingsRefresh";
 
 export const positionList: {
   id: number;
@@ -69,4 +70,6 @@ export function updatePositionList(
     }
     return b.lap - a.lap; // quem completou mais voltas está na frente
   });
+
+  refreshStandingsHtml();
 }

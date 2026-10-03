@@ -5,15 +5,37 @@ import { playerList } from "../../../changePlayerState/playerList";
 import { getBestPit } from "../../../tires&pits/trackBestPit";
 import { getBestLap } from "../../../zones/laps/trackBestLap";
 import { sendStandingsToApiWithRetry, sendQualyToApiWithRetry } from "./standingsApi";
+import { GeneralGameMode, generalGameMode } from "../../../changeGameState/changeGameModes";
+import { getPlayersOrderedByQualiTime } from "../qualy/playerTime";
+import { setStandingsRefreshHandler } from "./standingsRefresh";
 
 export interface StandingsRow {
   position: number;
   name: string;
   pits: number;
-  bestLap: number;
+  bestLap: number | null;
   laps: number;
   gap: string;
   team: string | null;
+}
+
+function getRaceGap(
+  row: (typeof positionList)[number],
+  leader: (typeof positionList)[number],
+  isLeader: boolean,
+) {
+  if (isLeader) return "+0.000s";
+
+  const lapsBehind = leader.lap - row.lap;
+  if (lapsBehind > 0) return `+${lapsBehind} lap${lapsBehind === 1 ? "" : "s"}`;
+
+  const sectorsBehind = leader.currentSector - row.currentSector;
+  if (sectorsBehind > 0) {
+    return `+${sectorsBehind} sector${sectorsBehind === 1 ? "" : "s"}`;
+  }
+
+  const timeGap = Math.max(0, row.totalTime - leader.totalTime);
+  return `+${timeGap.toFixed(3)}s`;
 }
 
 /**
@@ -23,17 +45,30 @@ export interface StandingsRow {
 export function generateStandingsHtml(): string {
   const bestLap = getBestLap();
   const bestPit = getBestPit();
+  const isQualy = generalGameMode === GeneralGameMode.GENERAL_QUALY;
 
-  const rows: StandingsRow[] = positionList.map((p, idx) => ({
-    position: idx + 1,
-    name: p.name,
-    pits: p.pits,
-    bestLap: p.time,
-    laps: playerList[p.id]?.currentLap ?? 0,
-    gap:
-      idx === 0 ? "+0.00" : `+${(p.time - positionList[0].time).toFixed(3)}s`,
-    team: p.team ?? null,
-  }));
+  const rows: StandingsRow[] = isQualy
+    ? getPlayersOrderedByQualiTime().map((p, idx, ordered) => ({
+        position: idx + 1,
+        name: p.name,
+        pits: 0,
+        bestLap: p.time,
+        laps: 0,
+        gap:
+          idx === 0
+            ? "+0.000s"
+            : `+${(p.time - ordered[0].time).toFixed(3)}s`,
+        team: p.team ?? null,
+      }))
+    : positionList.map((p, idx) => ({
+        position: idx + 1,
+        name: p.name,
+        pits: p.pits,
+        bestLap: p.time,
+        laps: playerList[p.id]?.currentLap ?? 0,
+        gap: getRaceGap(p, positionList[0], idx === 0),
+        team: p.team ?? null,
+      }));
 
   const timestamp = new Date().toLocaleString();
 
@@ -42,163 +77,231 @@ export function generateStandingsHtml(): string {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Race Standings</title>
+  <title>${isQualy ? "Qualifying" : "Race"} Standings</title>
   <style>
-    /* Compact scoreboard style */
+    :root {
+      color-scheme: dark;
+      --bg: #090b10;
+      --panel: #11151d;
+      --panel-raised: #171d27;
+      --line: #252d39;
+      --muted: #929baa;
+      --text: #f4f6f8;
+      --accent: #ed2939;
+      --accent-soft: rgba(237, 41, 57, .14);
+      --green: #54d6a0;
+    }
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
-      font-family: "Tomorrow", "Arial", sans-serif;
-      background: #0f0f10;
-      color: #fff;
-      padding: 8px;
+      min-height: 100vh;
+      padding: clamp(14px, 3vw, 36px);
+      color: var(--text);
+      background: radial-gradient(ellipse at 50% -15%, #202633 0, var(--bg) 58%);
+      font-family: Inter, "Segoe UI", Arial, sans-serif;
     }
-    .container {
-      width: 360px;
-      margin: 6px auto;
+    .container { width: min(100%, 1040px); margin: 0 auto; }
+    .topline {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 14px;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: .19em;
+      text-transform: uppercase;
+    }
+    .brand { display: flex; align-items: center; gap: 10px; }
+    .brand-mark {
+      display: grid;
+      width: 28px;
+      height: 28px;
+      place-items: center;
+      border-radius: 7px;
+      color: white;
+      background: var(--accent);
+      font-size: 14px;
+      font-style: italic;
+      letter-spacing: -.08em;
+    }
+    .live-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 7px 10px;
+      border: 1px solid rgba(84, 214, 160, .25);
+      border-radius: 999px;
+      color: var(--green);
+      background: rgba(84, 214, 160, .08);
+      letter-spacing: .1em;
+    }
+    .live-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: currentColor;
+      box-shadow: 0 0 10px currentColor;
     }
     .score-header {
-      background: #1e0e0e;
-      color: #ff3b30;
-      padding: 8px 10px;
-      border-radius: 6px 6px 0 0;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      font-size: 14px;
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 20px;
+      padding: clamp(20px, 4vw, 32px);
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-bottom: 3px solid var(--accent);
+      border-radius: 14px 14px 0 0;
+      background: linear-gradient(110deg, #171c25 0%, #11151d 68%, #21151b 100%);
     }
-    .timestamp {
-      text-align: center;
+    .eyebrow {
+      margin-bottom: 7px;
+      color: var(--accent);
       font-size: 10px;
-      color: #bdbdbd;
-      margin: 6px 0 8px 0;
+      font-weight: 900;
+      letter-spacing: .22em;
+      text-transform: uppercase;
     }
-    table {
-      width: 100%;
-      border-collapse: separate;
-      border-spacing: 0 6px;
-      font-size: 12px;
+    h1 {
+      font-size: clamp(22px, 4vw, 34px);
+      line-height: 1;
+      font-weight: 900;
+      letter-spacing: -.045em;
+      text-transform: uppercase;
     }
+    .session-label {
+      flex: 0 0 auto;
+      padding: 8px 11px;
+      border: 1px solid #3a424f;
+      border-radius: 6px;
+      color: #d9dee6;
+      background: rgba(0, 0, 0, .2);
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+    .table-card {
+      padding: 8px 14px 4px;
+      border: 1px solid var(--line);
+      border-top: 0;
+      border-radius: 0 0 14px 14px;
+      background: rgba(17, 21, 29, .96);
+      box-shadow: 0 22px 60px rgba(0, 0, 0, .28);
+    }
+    .table-scroll { overflow-x: auto; }
+    table { width: 100%; min-width: 590px; border-collapse: collapse; font-size: 13px; }
     thead th {
-      color: #ff3b30;
-      font-weight: 800;
-      font-size: 11px;
-      text-transform: uppercase;
-      background: transparent;
-      padding: 4px 6px;
+      padding: 13px 12px;
+      color: #8993a2;
+      border-bottom: 1px solid var(--line);
+      font-size: 10px;
+      font-weight: 900;
+      letter-spacing: .14em;
       text-align: left;
-      letter-spacing: 1px;
-    }
-    tbody tr {
-      color: #fff;
-      height: 28px;
-      display: table-row; /* preserve row layout */
-    }
-    tbody td {
-      padding: 4px 6px;
-      vertical-align: middle;
-      background: #201818;
-      border-radius: 6px;
-      margin-bottom: 6px;
-    }
-    /* make each cell look like a pill by using box-shadow to separate cells */
-    tbody td + td { margin-left: 6px; }
-    .pos {
-      width: 36px;
-      color: #ff3b30;
-      font-weight: 800;
-      text-align: left;
-      padding-left: 8px;
-    }
-    .name {
       text-transform: uppercase;
-      font-weight: 700;
-      width: 120px;
-      color: #fff;
+      white-space: nowrap;
     }
-    .team {
-      width: 80px;
-      text-transform: uppercase;
-      color: #cfcfcf;
-      font-weight: 700;
-    }
-    .gap {
-      width: 60px;
-      color: #dcdcdc;
-      text-align: right;
-      font-weight: 700;
-    }
-    .laps {
-      width: 36px;
-      text-align: center;
-      color: #f2f2f2;
-    }
-    .pits {
-      width: 36px;
-      text-align: center;
-      color: #f2f2f2;
-    }
+    tbody tr { transition: background .18s ease; }
+    tbody tr:hover { background: #1a202b; }
+    tbody td { padding: 14px 12px; border-bottom: 1px solid rgba(255,255,255,.055); white-space: nowrap; }
+    tbody tr:last-child td { border-bottom: 0; }
+    .pos { width: 54px; color: #9ba4b1; font-size: 15px; font-weight: 900; font-variant-numeric: tabular-nums; }
+    .leader .pos { color: var(--accent); }
+    .name { max-width: 260px; overflow: hidden; font-weight: 800; text-overflow: ellipsis; text-transform: uppercase; }
+    .team { color: #c1c8d2; font-size: 11px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; }
+    .gap, .best-lap { color: #e1e5eb; font-variant-numeric: tabular-nums; font-weight: 700; }
+    .leader .gap, .leader .best-lap { color: var(--green); }
+    .laps, .pits { color: #d4dae2; text-align: center; font-variant-numeric: tabular-nums; }
+    .pits { color: #ffbf69; }
     .info-box {
-      margin-top: 10px;
-      padding: 8px;
-      background: #151212;
-      border-radius: 6px;
-      font-size: 11px;
-      color: #cfcfcf;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 14px;
     }
-    .info-row { margin-bottom: 6px; }
-    .small { font-size: 11px; color: #bdbdbd; }
+    .info-row {
+      flex: 1 1 220px;
+      padding: 13px 15px;
+      border: 1px solid var(--line);
+      border-radius: 9px;
+      color: #edf0f4;
+      background: var(--panel-raised);
+      font-size: 12px;
+      font-weight: 700;
+    }
+    .small { display: block; margin-bottom: 5px; color: var(--muted); font-size: 9px; font-weight: 900; letter-spacing: .13em; text-transform: uppercase; }
+    .timestamp { padding: 12px 2px 2px; color: var(--muted); font-size: 10px; text-align: right; font-variant-numeric: tabular-nums; }
+    .empty-state { padding: 36px 16px; color: var(--muted); text-align: center; font-size: 13px; }
+    @media (max-width: 560px) {
+      body { padding: 12px; }
+      .topline { font-size: 9px; letter-spacing: .12em; }
+      .brand { gap: 7px; }
+      .brand-mark { width: 24px; height: 24px; }
+      .score-header { align-items: start; flex-direction: column; gap: 14px; padding: 20px; }
+      .table-card { padding: 4px 8px; }
+      thead th, tbody td { padding-right: 9px; padding-left: 9px; }
+      .timestamp { text-align: left; }
+    }
   </style>
 </head>
 <body>
   <div class="container">
-    <div class="score-header">FORMULA HAXBALL RACE</div>
-    <div class="timestamp">Last updated: ${timestamp}</div>
-
-    <table>
-      <thead>
-        <tr>
-          <th>P</th>
-          <th>NAME</th>
-          <th>TEAM</th>
-          <th>GAP</th>
-          <th>LAPS</th>
-          <th>PITS</th>
-        </tr>
-      </thead>
-      <tbody>
-        ${rows
-          .map(
-            (r) => `
-        <tr>
-          <td class="pos">${r.position}</td>
-          <td class="name">${escapeHtml(r.name)}</td>
-          <td class="team">${escapeHtml(r.team ?? "")}</td>
-          <td class="gap">${r.gap}</td>
-          <td class="laps">${r.laps}</td>
-          <td class="pits">${r.pits}</td>
-        </tr>
-        `,
-          )
-          .join("")}
-      </tbody>
-    </table>
-
-    <div class="info-box">
-      ${
-        bestLap
-          ? `<div class="info-row"><span class="small">⚡ Fastest Lap:</span> <span>${escapeHtml(
-              bestLap.playerName,
-            )} - ${bestLap.lapTime.toFixed(3)}s (Lap ${bestLap.lapNumber})</span></div>`
-          : ""
-      }
-      ${
-        bestPit
-          ? `<div class="info-row"><span class="small">🔧 Fastest Pit:</span> <span>${escapeHtml(
-              bestPit.playerName,
-            )} - ${bestPit.pitTime.toFixed(3)}s (Stop ${bestPit.pitNumber})</span></div>`
-          : ""
-      }
+    <div class="topline">
+      <div class="brand"><span class="brand-mark">FH</span><span>Formula Haxball</span></div>
+      <span class="live-badge"><span class="live-dot"></span>Live timing</span>
     </div>
+    <header class="score-header">
+      <div><div class="eyebrow">Race control · Standings</div><h1>${isQualy ? "Qualifying" : "Race"} classification</h1></div>
+      <div class="session-label">${isQualy ? "Best lap" : "On track"}</div>
+    </header>
+
+    <section class="table-card" aria-label="${isQualy ? "Qualifying" : "Race"} standings">
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th>Pos</th><th>Driver</th><th>Team</th><th>Gap</th>
+              ${isQualy ? "<th>Best lap</th>" : "<th>Laps</th><th>Pits</th>"}
+            </tr>
+          </thead>
+          <tbody>
+            ${rows.length === 0 ? `<tr><td class="empty-state" colspan="${isQualy ? 5 : 6}">Waiting for timing data</td></tr>` : rows
+              .map(
+                (r) => `
+            <tr class="${r.position === 1 ? "leader" : ""}">
+              <td class="pos">${String(r.position).padStart(2, "0")}</td>
+              <td class="name">${escapeHtml(r.name)}</td>
+              <td class="team">${escapeHtml(r.team ?? "—")}</td>
+              <td class="gap">${r.gap}</td>
+              ${
+                isQualy
+                  ? `<td class="best-lap">${r.bestLap === null ? "—" : `${r.bestLap.toFixed(3)}s`}</td>`
+                  : `<td class="laps">${r.laps}</td><td class="pits">${r.pits}</td>`
+              }
+            </tr>
+            `,
+              )
+              .join("")}
+          </tbody>
+        </table>
+      </div>
+
+      <div class="info-box">
+        ${
+          bestLap
+            ? `<div class="info-row"><span class="small">Fastest lap · ${bestLap.lapNumber}</span>${escapeHtml(bestLap.playerName)} <span>${bestLap.lapTime.toFixed(3)}s</span></div>`
+            : ""
+        }
+        ${
+          !isQualy && bestPit
+            ? `<div class="info-row"><span class="small">Fastest pit · stop ${bestPit.pitNumber}</span>${escapeHtml(bestPit.playerName)} <span>${bestPit.pitTime.toFixed(3)}s</span></div>`
+            : ""
+        }
+      </div>
+      <div class="timestamp">Last updated · ${timestamp}</div>
+    </section>
   </div>
 
   <script>
@@ -229,12 +332,6 @@ export function saveStandingsHtml(destFile?: string): string {
   try {
     fs.writeFileSync(out, html, { encoding: "utf8" });
     console.log(`Standings saved to: ${out}`);
-    
-    // Send standings to API asynchronously
-    sendStandingsToApiWithRetry().catch(err => {
-      console.error("Failed to send standings to API:", err);
-    });
-    
     return out;
   } catch (err) {
     console.error("Failed to save standings HTML:", err);
@@ -242,12 +339,22 @@ export function saveStandingsHtml(destFile?: string): string {
   }
 }
 
+setStandingsRefreshHandler(() => {
+  try {
+    saveStandingsHtml();
+  } catch (err) {
+    console.error("Failed to refresh standings HTML:", err);
+  }
+});
+
 /**
  * Send current standings to the API without saving HTML file
  */
 export async function sendStandingsToApiOnly(): Promise<boolean> {
   try {
-    return await sendStandingsToApiWithRetry();
+    return generalGameMode === GeneralGameMode.GENERAL_QUALY
+      ? await sendQualyToApiWithRetry()
+      : await sendStandingsToApiWithRetry();
   } catch (error) {
     console.error("Failed to send standings to API:", error);
     return false;

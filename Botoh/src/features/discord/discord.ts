@@ -270,22 +270,43 @@ export function sendDiscordReplay(replay: Uint8Array) {
   }
 }
 
-export function sendFileToWebhook(filePath: string, webhookUrl: string, source = "FILE") {
+export async function sendFileToWebhook(
+  filePath: string,
+  webhookUrl: string,
+  source = "FILE",
+): Promise<boolean> {
   try {
-    if (!filePath || !webhookUrl) return;
+    if (!filePath || !webhookUrl) return false;
     const abs = path.isAbsolute(filePath)
       ? filePath
       : path.join(process.cwd(), filePath);
-    if (!fs.existsSync(abs)) return console.error("File not found:", abs);
+    if (!fs.existsSync(abs)) {
+      console.error("File not found:", abs);
+      return false;
+    }
 
     const buffer = fs.readFileSync(abs);
     const blob = new Blob([new Uint8Array(buffer)], { type: "application/octet-stream" });
     const formData = new FormData();
     formData.append("file", blob, path.basename(abs));
 
-    safeSend(webhookUrl, formData, source, true);
+    const response = await fetch(webhookUrl, {
+      method: "POST",
+      body: formData,
+    });
+
+    if (!response.ok) {
+      console.error(
+        `❌ [Discord ERROR ${response.status}] (${source}):`,
+        await response.text(),
+      );
+      return false;
+    }
+
+    return true;
   } catch (err) {
     console.error("❌ [sendFileToWebhook ERROR]:", err);
+    return false;
   }
 }
 

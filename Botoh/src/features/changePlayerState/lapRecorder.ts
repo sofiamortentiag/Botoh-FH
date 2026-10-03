@@ -12,6 +12,10 @@ export function addLapToStore(playerId: number, playerName: string, lapTime: num
   lapStore[key].laps.push(lapTime);
 }
 
+export function clearLapCsvHistory() {
+  Object.keys(lapStore).forEach((playerId) => delete lapStore[playerId]);
+}
+
 function getTimestamp() {
   const d = new Date();
   return (

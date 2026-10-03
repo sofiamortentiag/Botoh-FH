@@ -1,3 +1,5 @@
+import { refreshStandingsHtml } from "../race/standingsRefresh";
+
 let arrayPlayers: {
   name: string;
   time: number;
@@ -24,6 +26,8 @@ export function updatePlayerTime(
   } else {
     arrayPlayers.push({ name, time, id, team });
   }
+
+  refreshStandingsHtml();
 }
 
 export function clearPlayers() {

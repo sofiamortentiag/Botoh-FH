@@ -13,6 +13,7 @@ import {
 import { MESSAGES } from "../../../chat/messages";
 import { leagueScuderia } from "../../../scuderias/scuderias";
 import { getPlayersOrderedByQualiTime } from "./playerTime";
+import { saveStandingsHtml } from "../race/standingsHtml";
 
 const HAXBALL_MSG_LIMIT = 124;
 const TEAM_COL_WIDTH = 12;
@@ -26,9 +27,12 @@ export function printAllTimes(room: RoomObject, toPlayerID?: number) {
   const orderedList = getPlayersOrderedByQualiTime();
 
   if (orderedList.length === 0) {
+    saveStandingsHtml();
     sendChatMessage(room, MESSAGES.NO_TIMES(), toPlayerID);
     return;
   }
+
+  saveStandingsHtml();
 
   let messageBuffer = ` P - ${centerText("Name", MAX_PLAYER_NAME)} | ${centerText(
     "Team",
@@ -109,9 +113,7 @@ export function printAllTimes(room: RoomObject, toPlayerID?: number) {
     });
   });
 
-  if (teamLaps.length === 0) {
-    return;
-  }
+  if (teamLaps.length === 0) return;
 
   teamLaps.sort((a, b) => a.time - b.time);
 
@@ -145,4 +147,5 @@ export function printAllTimes(room: RoomObject, toPlayerID?: number) {
   if (teamMessageBuffer.length > 0) {
     sendNonLocalizedSmallChatMessage(room, teamMessageBuffer, toPlayerID);
   }
+
 }

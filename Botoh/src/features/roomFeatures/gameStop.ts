@@ -42,10 +42,52 @@ import { resetDebrisUsedList } from "../debris/chooseOneDebris";
 import { clearPlayers } from "../commands/gameMode/qualy/playerTime";
 import { printAllTimes } from "../commands/gameMode/qualy/printAllTimes";
 import { printAllPositions } from "../commands/gameMode/race/printAllPositions";
-import { exportAllLapTimesCsv } from "../changePlayerState/lapRecorder";
+import {
+  clearLapCsvHistory,
+  exportAllLapTimesCsv,
+} from "../changePlayerState/lapRecorder";
 import { sendFileToWebhook } from "../discord/discord";
+import fs from "fs";
+import path from "path";
 
 let replayData: Uint8Array | null = null;
+
+async function sendLapCsvAndCleanUp(room: RoomObject) {
+  const webhookUrl =
+    "https://discord.com/api/webhooks/1445546615715921992/6Z4h19srHYhvwr4tVggs_mms0C85BiiCNuqeJQhv7dTm-jc6s5NbYbTQshVVMI3z-6_J";
+
+  let csvFiles: string[] = [];
+  try {
+    const csvPath = exportAllLapTimesCsv(room);
+    if (csvPath) log(`Lap times exported: ${csvPath}`);
+
+    // Reset only the CSV fallback store; leave race/player state untouched.
+    clearLapCsvHistory();
+
+    // Snapshot this stop's files before awaiting the upload, so a later race's
+    // CSV files are not removed if the next session starts first.
+    csvFiles = fs
+      .readdirSync(process.cwd(), { withFileTypes: true })
+      .filter((entry) => entry.isFile() && path.extname(entry.name).toLowerCase() === ".csv")
+      .map((entry) => path.join(process.cwd(), entry.name));
+
+    const sent = csvPath
+      ? await sendFileToWebhook(csvPath, webhookUrl, "LAP_TIMES_CSV")
+      : false;
+    log(sent ? "Lap CSV sent to webhook" : "Lap CSV was not sent");
+  } catch (err) {
+    log("Error exporting or sending lap CSV: " + String(err));
+  } finally {
+    csvFiles.forEach((csvPath) => {
+      try {
+        if (fs.existsSync(csvPath)) fs.unlinkSync(csvPath);
+      } catch (err) {
+        log(`Error deleting CSV ${csvPath}: ${String(err)}`);
+      }
+    });
+    log(`Deleted ${csvFiles.length} CSV file(s) from this stop`);
+  }
+}
 
 export function GameStop(room: RoomObject) {
   room.onGameStop = function (byPlayer) {
@@ -67,24 +109,7 @@ export function GameStop(room: RoomObject) {
     }
     setGameStarted(false);
 
-    try {
-      const csvPath = exportAllLapTimesCsv(room);
-      if (csvPath) log(`Lap times exported: ${csvPath}`);
-    } catch (err) {
-      log("Error exporting lap times: " + String(err));
-    }
-
-    try {
-      const WEBHOOK =
-        "https://discord.com/api/webhooks/1445546615715921992/6Z4h19srHYhvwr4tVggs_mms0C85BiiCNuqeJQhv7dTm-jc6s5NbYbTQshVVMI3z-6_J";
-      const csvPath = exportAllLapTimesCsv(room);
-      if (csvPath) {
-        sendFileToWebhook(csvPath, WEBHOOK, "LAP_TIMES_CSV");
-        log(`Lap CSV sent to webhook`);
-      }
-    } catch (err) {
-      log("Error sending lap CSV to webhook: " + String(err));
-    }
+    void sendLapCsvAndCleanUp(room);
 
     if (timerController.positionTimer !== null) {
       clearTimeout(timerController.positionTimer);
