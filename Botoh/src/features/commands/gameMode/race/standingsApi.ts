@@ -5,10 +5,32 @@ import { getBestPit } from "../../../tires&pits/trackBestPit";
 import { getBestLap } from "../../../zones/laps/trackBestLap";
 import { Tires } from "../../../tires&pits/tires";
 import { getPlayersOrderedByQualiTime } from "../qualy/playerTime";
+import {
+  getLiveTelemetry,
+  getRadioTargets,
+  getRaceControlState,
+  LiveTelemetryDriver,
+  RadioTarget,
+} from "./liveRaceState";
 
-export interface ApiStandingsData {
+export interface CloseBattle {
+  position: number;
+  aheadName: string;
+  chasingName: string;
+  gapSeconds: number;
+}
+
+interface ApiLiveState {
+  telemetry: LiveTelemetryDriver[];
+  radioTargets: RadioTarget[];
+  raceControl: ReturnType<typeof getRaceControlState>;
+  closeBattles: CloseBattle[];
+}
+
+export interface ApiStandingsData extends ApiLiveState {
   timestamp: string;
   standings: {
+    id: number;
     position: number;
     name: string;
     team: string | null;
@@ -34,10 +56,11 @@ export interface ApiStandingsData {
   };
 }
 
-export interface ApiQualyData {
+export interface ApiQualyData extends ApiLiveState {
   timestamp: string;
   sessionType: "qualy";
   standings: {
+    id: number;
     position: number;
     name: string;
     team: string | null;
@@ -102,7 +125,9 @@ export function createQualyStandingsData(): ApiQualyData {
   return {
     timestamp: new Date().toISOString(),
     sessionType: "qualy",
+    ...getApiLiveState([]),
     standings: qualyPlayers.map((p, idx) => ({
+      id: p.id,
       position: idx + 1,
       name: p.name,
       team: p.team ?? null,
@@ -188,9 +213,11 @@ export function createRaceStandingsData(): ApiStandingsData {
   const bestPit = getBestPit();
   return {
     timestamp: new Date().toISOString(),
+    ...getApiLiveState(calculateCloseBattles()),
     standings: positionList.map((p, idx) => {
       const playerData = playerList[p.id];
       return {
+        id: p.id,
         position: idx + 1,
         name: p.name,
         team: p.team ?? null,
@@ -215,6 +242,38 @@ export function createRaceStandingsData(): ApiStandingsData {
       pitTime: bestPit.pitTime,
       pitNumber: bestPit.pitNumber,
     } : undefined,
+  };
+}
+
+function calculateCloseBattles(): CloseBattle[] {
+  const battles: CloseBattle[] = [];
+
+  for (let index = 1; index < positionList.length; index++) {
+    const ahead = positionList[index - 1];
+    const chasing = positionList[index];
+    if (!ahead.active || !chasing.active) continue;
+    if (ahead.lap !== chasing.lap || ahead.currentSector !== chasing.currentSector) continue;
+
+    const gapSeconds = Math.max(0, chasing.totalTime - ahead.totalTime);
+    if (gapSeconds <= 3) {
+      battles.push({
+        position: index + 1,
+        aheadName: ahead.name,
+        chasingName: chasing.name,
+        gapSeconds,
+      });
+    }
+  }
+
+  return battles.sort((a, b) => a.gapSeconds - b.gapSeconds).slice(0, 5);
+}
+
+function getApiLiveState(closeBattles: CloseBattle[]): ApiLiveState {
+  return {
+    telemetry: getLiveTelemetry(),
+    radioTargets: getRadioTargets(),
+    raceControl: getRaceControlState(),
+    closeBattles,
   };
 }
 

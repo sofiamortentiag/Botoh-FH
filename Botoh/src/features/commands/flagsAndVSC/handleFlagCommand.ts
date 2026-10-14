@@ -8,6 +8,8 @@ import {
   sendBlueMessage,
   sendBlackMessage,
 } from "../../chat/chat";
+import { clearRaceControlBanner, publishRaceControlBanner } from "../gameMode/race/liveRaceState";
+import { refreshLiveStandingsApi } from "../gameMode/race/standingsHtml";
 import { MESSAGES } from "../../chat/messages";
 import { clearDebris } from "../../debris/clearDebris";
 import { getPlayerAndDiscs } from "../../playerFeatures/getPlayerAndDiscs";
@@ -66,6 +68,8 @@ export function handleFlagCommand(
       handlePresentationLapCommand(undefined, ["false"], room);
     }
     flag = "green";
+    clearRaceControlBanner();
+    refreshLiveStandingsApi();
   } else if (
     flagChoosen === "green" &&
     (vsc === true || presentationLap === true)
@@ -77,6 +81,8 @@ export function handleFlagCommand(
       handlePresentationLapCommand(undefined, ["false"], room);
     }
     flag = "green";
+    publishRaceControlBanner("green", "GREEN FLAG", "Track is clear");
+    refreshLiveStandingsApi();
     sendGreenMessage(room, MESSAGES.GREEN_FLAG());
     sendGreenMessage(room, MESSAGES.GREEN_FLAG_TWO());
     clearDebris(room);
@@ -87,6 +93,8 @@ export function handleFlagCommand(
   } else if (flagChoosen === "yellow" && vsc === false) {
     changeVSC();
     flag = "yellow";
+    publishRaceControlBanner("yellow", "YELLOW FLAG", "Overtaking prohibited");
+    refreshLiveStandingsApi();
 
     sendYellowMessage(room, MESSAGES.YELLOW_FLAG());
     sendYellowMessage(room, MESSAGES.YELLOW_FLAG_TWO());

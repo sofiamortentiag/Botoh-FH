@@ -1,6 +1,8 @@
 // ...existing code...
-import { sendErrorMessage, sendNonLocalizedSmallChatMessage } from "../../chat/chat";
+import { sendErrorMessage } from "../../chat/chat";
 import { MESSAGES } from "../../chat/messages";
+import { publishRaceRadio } from "../gameMode/race/liveRaceState";
+import { refreshLiveStandingsApi } from "../gameMode/race/standingsHtml";
 const radioColor = 0xFF8800; // Naranja para el radio
 const radioFont = "bold";
 export function handleRadioCommand(
@@ -58,5 +60,29 @@ export function handleRadioCommand(
   // private -> only target and sender
   room.sendAnnouncement(announced, target.id, radioColor, radioFont);
   room.sendAnnouncement(announced, byPlayer.id, radioColor, radioFont);
+  publishRaceRadio(byPlayer.name, target.name, message);
+  refreshLiveStandingsApi();
+}
+
+/** Send a private radio message requested from the authenticated web panel. */
+export function sendWebRadioMessage(
+  room: RoomObject,
+  targetId: number,
+  targetName: string,
+  message: string,
+): boolean {
+  const target = room.getPlayerList().find(
+    (player) =>
+      player.id === targetId &&
+      player.name.toLowerCase() === targetName.trim().toLowerCase(),
+  );
+  if (!target || !message.trim()) return false;
+
+  const cleanMessage = message.trim().slice(0, 180);
+  const sender = "Team principal";
+  room.sendAnnouncement(`[RADIO] ${sender}: ${cleanMessage}`, target.id, radioColor, radioFont);
+  publishRaceRadio(sender, target.name, cleanMessage);
+  refreshLiveStandingsApi();
+  return true;
 }
 // ...existing code...

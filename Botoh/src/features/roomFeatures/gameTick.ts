@@ -23,8 +23,14 @@ import { mainLapCommand } from '../zones/laps/mainLapCommands';
 import { checkTrainingHourlyLog } from '../counters/checkTrainingHourlyLog';
 import { updateDebrisTouch } from '../debris/detectCollisionDebris';
 import { handleChangeCollisionPlayerCano, handleChangePlayerSizeCano } from '../zones/handleCanoTp';
+import { GeneralGameMode, generalGameMode } from '../changeGameState/changeGameModes';
+import { updatePositionList } from '../commands/gameMode/race/positionList';
+import { refreshLiveStandingsApi } from '../commands/gameMode/race/standingsHtml';
+import { captureLiveRaceData } from '../commands/gameMode/race/liveRaceState';
 
 const detectCutThrottledByPlayer: Map<number, ReturnType<typeof throttlePerSecond>> = new Map();
+let lastLiveTimingSampleAt = 0;
+const LIVE_TIMING_SAMPLE_INTERVAL_MS = 1000;
 
 export let gameStarted = false;
 export function setGameStarted(value: boolean) {
@@ -72,6 +78,20 @@ export function GameTick(room: RoomObject) {
 
       // updatePreviousPos(pad, p);
     });
+
+    const now = Date.now();
+    if (
+      now - lastLiveTimingSampleAt >= LIVE_TIMING_SAMPLE_INTERVAL_MS &&
+      (generalGameMode === GeneralGameMode.GENERAL_RACE ||
+        generalGameMode === GeneralGameMode.GENERAL_QUALY)
+    ) {
+      lastLiveTimingSampleAt = now;
+      captureLiveRaceData(playersAndDiscs, room);
+      if (generalGameMode === GeneralGameMode.GENERAL_RACE) {
+        updatePositionList(players, room, false);
+      }
+      refreshLiveStandingsApi();
+    }
 
     afkKick(room);
 

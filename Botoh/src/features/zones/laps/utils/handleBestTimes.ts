@@ -14,6 +14,8 @@ import { ACTUAL_CIRCUIT } from "../../../roomFeatures/stadiumChange";
 import { serialize } from "../../../utils";
 import { broadcastLapTimeToPlayers } from "./annoucements/broadcastTimeToPlayer";
 import { updateBestTimeWithTeam } from "./handleBestTimeWithTeam";
+import { publishRaceControlBanner } from "../../../commands/gameMode/race/liveRaceState";
+import { refreshLiveStandingsApi } from "../../../commands/gameMode/race/standingsHtml";
 
 export function handleBestTimes(
   room: RoomObject,
@@ -33,6 +35,13 @@ export function handleBestTimes(
     updateBestTime(ACTUAL_CIRCUIT.info.name, lapTime, p.name);
     playerData.bestTime = lapTime;
 
+    publishRaceControlBanner(
+      "record",
+      "TRACK RECORD",
+      `${p.name} · ${lapTime.toFixed(3)}s`,
+    );
+    refreshLiveStandingsApi();
+
     sendBestTimeEver(room, MESSAGES.TRACK_RECORD(p.name, lapTime));
     playerData.sectorColour = COLORS.PURPLE;
     sendDiscordTrackRecord(p.name, lapTime);
@@ -41,6 +50,12 @@ export function handleBestTimes(
   }
 
   if (playerData.lastLapValid && isFastestLapRace) {
+    publishRaceControlBanner(
+      "hotlap",
+      "FASTEST LAP",
+      `${p.name} · ${lapTime.toFixed(3)}s`,
+    );
+    refreshLiveStandingsApi();
     sendBestTimeRace(room, MESSAGES.FASTEST_LAP(p.name, lapTime));
     playerData.sectorColour = COLORS.MAGENTA;
   }

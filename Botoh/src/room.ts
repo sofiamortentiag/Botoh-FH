@@ -24,6 +24,7 @@ import { GameStop } from "./features/roomFeatures/gameStop";
 import { PlaerActivity } from "./features/roomFeatures/playerActivitie";
 import { log } from "./features/discord/logger";
 import { startStandingsServer } from "./features/web/standingsServer";
+import { startRadioQueueWorker } from "./features/web/radioQueueWorker";
 
 const envName = process.env.LEAGUE_ENV || "ftoh";
 const roomName = LEAGUE_MODE
@@ -80,6 +81,7 @@ export const roomPromise: Promise<any> = HaxballJS().then((HBInit: any) => {
   StadiumChange(room);
   TeamChange(room);
   PlaerActivity(room);
+  startRadioQueueWorker(room);
 
   room.onRoomLink = function (link: any) {
     console.log("Link da sala:", link);

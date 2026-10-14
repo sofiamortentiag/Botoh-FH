@@ -1,4 +1,5 @@
 import { PitsInfo, playerList } from "../../../changePlayerState/playerList";
+import { vectorSpeed } from "../../../utils";
 import { refreshStandingsHtml } from "./standingsRefresh";
 
 export const positionList: {
@@ -12,11 +13,13 @@ export const positionList: {
   active: boolean;
   currentSector: number;
   team: string | null;
+  speed: number;
 }[] = [];
 
 export function updatePositionList(
   players: { p: PlayerObject; disc: DiscPropertiesObject }[],
   room: RoomObject,
+  shouldRefresh = true,
 ) {
   // Cria um conjunto com os nomes dos jogadores atualmente ativos na sala
   const activePlayers = new Set(players.map((player) => player.p.name));
@@ -43,6 +46,7 @@ export function updatePositionList(
       active: true,
       currentSector: playerData.currentSector,
       team: playerData.leagueScuderia,
+      speed: vectorSpeed(player.disc.xspeed, player.disc.yspeed),
     };
 
     // Atualiza ou adiciona o jogador na lista de posições
@@ -71,5 +75,5 @@ export function updatePositionList(
     return b.lap - a.lap; // quem completou mais voltas está na frente
   });
 
-  refreshStandingsHtml();
+  if (shouldRefresh) refreshStandingsHtml();
 }

@@ -370,6 +370,11 @@ function scheduleLiveApiRefresh() {
   schedulePendingApiUpdate();
 }
 
+/** Schedule a live API snapshot without synchronously writing the local HTML file. */
+export function refreshLiveStandingsApi() {
+  scheduleLiveApiRefresh();
+}
+
 function schedulePendingApiUpdate() {
   if (!pendingApiUpdate || apiRefreshTimer || apiRefreshInFlight) return;
 
