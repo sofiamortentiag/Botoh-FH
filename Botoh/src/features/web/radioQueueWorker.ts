@@ -4,6 +4,9 @@ import { sendWebRadioMessage } from "../commands/chat/handleRadioCommand";
 const QUEUE_URL =
   process.env.RADIO_QUEUE_URL ||
   "https://haxball-league.vercel.app/api/radio";
+// Default token keeps the radio worker ready in local and AWS deployments.
+// An environment variable can still override it without changing the source.
+const DEFAULT_RADIO_BOT_TOKEN = "bottokenfh";
 const POLL_INTERVAL_MS = 6000;
 const MAX_BACKOFF_MS = 30_000;
 
@@ -17,13 +20,7 @@ interface QueuedRadioMessage {
 }
 
 export function startRadioQueueWorker(room: RoomObject) {
-  const token = process.env.RADIO_BOT_TOKEN;
-  if (!token) {
-    console.warn(
-      "Web radio is disabled: configure RADIO_BOT_TOKEN to connect the bot to the broadcast panel.",
-    );
-    return;
-  }
+  const token = process.env.RADIO_BOT_TOKEN || DEFAULT_RADIO_BOT_TOKEN;
 
   let stopped = false;
   let retryDelay = POLL_INTERVAL_MS;
