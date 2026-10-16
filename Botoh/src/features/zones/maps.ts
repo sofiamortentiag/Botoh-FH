@@ -111,6 +111,7 @@ import { BRAZZAVILLE } from "../../circuits/brazzaville/brazzaville";
 import { ESTORIL } from "../../circuits/estoril/estoril";
 import { TIGRE } from "../../circuits/tigre/tigre";
 import { MUGELLO } from "../../circuits/mugello/mugello";
+import { MAX_TRACK } from "../../circuits/max_track/max_track";
 // import {DAYTONA} from "../circuits/daytona/daytona";
 // import {BARCELONA} from "../circuits/barcelona/barcelona";
 // import {MACAU} from "../circuits/macau/macau";
@@ -191,6 +192,7 @@ export const CIRCUITS: Circuit[] = LEAGUE_MODE
       ESTORIL,
       TIGRE,
       MUGELLO,
+      MAX_TRACK,
       PODIUM,
       WAITROOM,
     ]
