@@ -14,6 +14,10 @@ export function getBestLap(): BestLapInfo {
   return bestLap;
 }
 
+export function transferBestLapToDriver(fromName: string, toName: string) {
+  if (bestLap?.playerName === fromName) bestLap.playerName = toName;
+}
+
 export function trySetBestLap(
   playerName: string,
   lapTime: number,

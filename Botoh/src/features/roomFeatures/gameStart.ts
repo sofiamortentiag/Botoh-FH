@@ -17,6 +17,7 @@ import { decideBlowoutPoint } from "../tires&pits/tireBlowManager";
 import { Teams } from "../changeGameState/teams";
 import { positionList } from "../commands/gameMode/race/positionList";
 import { initBattleRoyale } from "../commands/gameMode/battleRoyale.ts/handleBattleRoyaleLaps";
+import { resetWecFinishPhase } from "../changeGameState/EndRaceSession";
 
 export function GameStart(room: RoomObject) {
   room.onGameStart = function (byPlayer) {
@@ -46,10 +47,10 @@ export function GameStart(room: RoomObject) {
       }
     });
     finishList.splice(0, finishList.length);
+    resetWecFinishPhase();
     positionList.splice(0, positionList.length);
-    for (let i = 0; i < laps; i++) {
-      lapPositions[i] = [];
-    }
+    lapPositions.length = 0;
+    for (let i = 0; i < laps; i++) lapPositions.push([]);
     if (!LEAGUE_MODE) {
       checkRunningPlayers(room);
       // if (gameMode === GameMode.QUALY) {

@@ -1,4 +1,6 @@
 import {
+  gameMode,
+  GameMode,
   generalGameMode,
   GeneralGameMode,
 } from "../../../changeGameState/changeGameModes";
@@ -24,10 +26,15 @@ export function handleWTimeCommand(
     sendErrorMessage(room, MESSAGES.NOT_IN_RACE(), byPlayer.id);
     return false;
   }
+  if (gameMode !== GameMode.WEC) {
+    sendErrorMessage(room, MESSAGES.NOT_IN_WEC(), byPlayer.id);
+    return false;
+  }
   if (args.length === 0) {
-    sendErrorMessage(room, MESSAGES.QTIME_COMMAND_USAGE(), byPlayer.id);
+    sendErrorMessage(room, MESSAGES.WTIME_COMMAND_USAGE(), byPlayer.id);
+    return false;
   }
 
-  setRaceTime(byPlayer, parseInt(args[0]), room);
+  setRaceTime(byPlayer, Number(args[0]), room);
   return false;
 }

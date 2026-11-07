@@ -48,7 +48,7 @@ function handleRaceLap(
 
   if (gameMode === GameMode.TRAINING) return;
 
-  if (currentLap <= laps) {
+  if (gameMode === GameMode.WEC || currentLap <= laps) {
     notifyCurrentLapAndPitInfo(p, room, currentLap);
     notifyPositionOrLeaders(
       p,

@@ -1,6 +1,8 @@
 import {
   generalGameMode,
   GeneralGameMode,
+  gameMode,
+  GameMode,
 } from "../../../changeGameState/changeGameModes";
 import { sendErrorMessage, sendSuccessMessage } from "../../../chat/chat";
 import { MESSAGES } from "../../../chat/messages";
@@ -19,7 +21,7 @@ export function setQualiTime(
     return false;
   }
 
-  if (isNaN(time) || time < 0) {
+  if (!Number.isFinite(time) || time < 0) {
     sendErrorMessage(room, MESSAGES.INVALID_TIME(), player.id);
     return false;
   }
@@ -47,7 +49,7 @@ export function setRaceTime(
     return false;
   }
 
-  if (isNaN(time) || time < 0) {
+  if (!Number.isFinite(time) || time < 0) {
     sendErrorMessage(room, MESSAGES.INVALID_TIME(), player.id);
     return false;
   }
@@ -55,7 +57,7 @@ export function setRaceTime(
   let msg;
   if (time === 0) {
     raceTime = Number.MAX_VALUE;
-    msg = MESSAGES.INFINITE_QUALI();
+    msg = MESSAGES.INFINITE_RACE_TIME();
   } else {
     raceTime = time;
     msg = MESSAGES.WEC_TIME(raceTime);

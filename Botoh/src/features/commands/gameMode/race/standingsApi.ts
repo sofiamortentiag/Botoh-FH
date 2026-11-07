@@ -221,7 +221,7 @@ export function createRaceStandingsData(): ApiStandingsData {
         position: idx + 1,
         name: p.name,
         team: p.team ?? null,
-        laps: playerData?.currentLap ?? 0,
+        laps: p.lap,
         pits: p.pits,
         bestLap: p.time,
         gap: calculateRaceGap(idx),

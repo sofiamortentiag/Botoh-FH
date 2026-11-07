@@ -1,7 +1,6 @@
 import * as fs from "fs";
 import * as path from "path";
 import { positionList } from "./positionList";
-import { playerList } from "../../../changePlayerState/playerList";
 import { getBestPit } from "../../../tires&pits/trackBestPit";
 import { getBestLap } from "../../../zones/laps/trackBestLap";
 import {
@@ -55,7 +54,7 @@ function getRaceGap(
 }
 
 /**
- * Generate HTML standings table from positionList and playerList.
+ * Generate HTML standings table from the live position list.
  * Returns HTML string ready to write to file.
  */
 export function generateStandingsHtml(): string {
@@ -81,7 +80,7 @@ export function generateStandingsHtml(): string {
         name: p.name,
         pits: p.pits,
         bestLap: p.time,
-        laps: playerList[p.id]?.currentLap ?? 0,
+        laps: p.lap,
         gap: getRaceGap(p, positionList[0], idx === 0),
         team: p.team ?? null,
       }));

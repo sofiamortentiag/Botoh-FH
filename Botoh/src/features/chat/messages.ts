@@ -420,6 +420,22 @@ export const MESSAGES = {
     }),
   }),
 
+  INFINITE_RACE_TIME: (): LocalizedMessageFunction => ({
+    en: en_messages.INFINITE_RACE_TIME,
+    es: es_messages.INFINITE_RACE_TIME,
+    fr: fr_messages.INFINITE_RACE_TIME,
+    tr: tr_messages.INFINITE_RACE_TIME,
+    pt: pt_messages.INFINITE_RACE_TIME,
+  }),
+
+  WTIME_COMMAND_USAGE: (): LocalizedMessageFunction => ({
+    en: en_messages.WTIME_COMMAND_USAGE,
+    es: es_messages.WTIME_COMMAND_USAGE,
+    fr: fr_messages.WTIME_COMMAND_USAGE,
+    tr: tr_messages.WTIME_COMMAND_USAGE,
+    pt: pt_messages.WTIME_COMMAND_USAGE,
+  }),
+
   NOT_IN_QUALI: (): LocalizedMessageFunction => ({
     en: en_messages.NOT_IN_QUALI,
     es: es_messages.NOT_IN_QUALI,
@@ -434,6 +450,14 @@ export const MESSAGES = {
     fr: fr_messages.NOT_IN_RACE,
     tr: tr_messages.NOT_IN_RACE,
     pt: pt_messages.NOT_IN_RACE,
+  }),
+
+  NOT_IN_WEC: (): LocalizedMessageFunction => ({
+    en: en_messages.NOT_IN_WEC,
+    es: es_messages.NOT_IN_WEC,
+    fr: fr_messages.NOT_IN_WEC,
+    tr: tr_messages.NOT_IN_WEC,
+    pt: pt_messages.NOT_IN_WEC,
   }),
 
   INVALID_TIME: (): LocalizedMessageFunction => ({
@@ -800,6 +824,23 @@ export const MESSAGES = {
     pt: replaceTemplateString(pt_messages.CURRENT_LAP, {
       currentLap: currentLap.toString(),
       laps: laps.toString(),
+    }),
+  }),
+  WEC_CURRENT_LAP: (currentLap: number): LocalizedMessageFunction => ({
+    en: replaceTemplateString(en_messages.WEC_CURRENT_LAP, {
+      currentLap: currentLap.toString(),
+    }),
+    es: replaceTemplateString(es_messages.WEC_CURRENT_LAP, {
+      currentLap: currentLap.toString(),
+    }),
+    fr: replaceTemplateString(fr_messages.WEC_CURRENT_LAP, {
+      currentLap: currentLap.toString(),
+    }),
+    tr: replaceTemplateString(tr_messages.WEC_CURRENT_LAP, {
+      currentLap: currentLap.toString(),
+    }),
+    pt: replaceTemplateString(pt_messages.WEC_CURRENT_LAP, {
+      currentLap: currentLap.toString(),
     }),
   }),
   POSITION_AND_DISTANCE_AHEAD: (

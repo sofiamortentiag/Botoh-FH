@@ -2,6 +2,7 @@ import { Teams } from "../../../../changeGameState/teams";
 import { sendChatMessage } from "../../../../chat/chat";
 import { MESSAGES } from "../../../../chat/messages";
 import { printAllPositions } from "../../../../commands/gameMode/race/printAllPositions";
+import { gameMode, GameMode } from "../../../../changeGameState/changeGameModes";
 import { laps } from "../../../laps";
 
 export function notifySpectatorsCurrentLap(
@@ -12,7 +13,13 @@ export function notifySpectatorsCurrentLap(
   pad
     .filter((pla) => pla.p.team !== Teams.RUNNERS)
     .forEach((pla) => {
-      sendChatMessage(room, MESSAGES.CURRENT_LAP(currentLap, laps), pla.p.id);
+      sendChatMessage(
+        room,
+        gameMode === GameMode.WEC
+          ? MESSAGES.WEC_CURRENT_LAP(currentLap)
+          : MESSAGES.CURRENT_LAP(currentLap, laps),
+        pla.p.id,
+      );
       printAllPositions(room, pla.p.id, false);
     });
 }

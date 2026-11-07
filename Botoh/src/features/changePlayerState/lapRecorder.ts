@@ -16,6 +16,22 @@ export function clearLapCsvHistory() {
   Object.keys(lapStore).forEach((playerId) => delete lapStore[playerId]);
 }
 
+export function transferLapCsvHistory(
+  fromPlayerId: number,
+  toPlayerId: number,
+  toPlayerName: string,
+) {
+  const fromKey = String(fromPlayerId);
+  const toKey = String(toPlayerId);
+  const source = lapStore[fromKey];
+  if (source) {
+    lapStore[toKey] = { name: toPlayerName, laps: [...source.laps] };
+    delete lapStore[fromKey];
+  } else {
+    delete lapStore[toKey];
+  }
+}
+
 function getTimestamp() {
   const d = new Date();
   return (

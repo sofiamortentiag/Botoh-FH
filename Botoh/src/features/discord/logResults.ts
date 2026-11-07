@@ -14,6 +14,7 @@ import { getTimestamp } from "../utils";
 import { laps } from "../zones/laps";
 import { getBestLap } from "../zones/laps/trackBestLap";
 import { sendDiscordResult } from "./discord";
+import { raceTime } from "../commands/gameMode/qualy/qualiMode";
 
 function formatTimeSec(seconds: number): string {
   if (seconds <= 0 || seconds === Number.MAX_VALUE || !isFinite(seconds)) {
@@ -78,16 +79,26 @@ export function sendRaceResultsToDiscord() {
     gameModeResult = "INDY";
   } else if (gameMode === GameMode.BATTLE_ROYALE) {
     gameModeResult = "BATTLE ROYALE";
+  } else if (gameMode === GameMode.WEC) {
+    gameModeResult = "WEC ENDURANCE";
   } else {
     gameModeResult = "OTHER";
   }
 
   const winner = positionList[0];
+  const sessionLength =
+    raceTime === Number.MAX_VALUE
+      ? "Unlimited"
+      : raceTime > 0
+        ? `${raceTime} min`
+        : "Not configured";
   const header =
     "```" +
     `\n🏁 FINAL ${gameModeResult} RESULTS - ${ACTUAL_CIRCUIT.info.name} 🏁` +
     `\nTime: ${getTimestamp()}` +
-    `\nLaps: ${laps}` +
+    (gameMode === GameMode.WEC
+      ? `\nDuration: ${sessionLength}`
+      : `\nLaps: ${laps}`) +
     "\nPos | Driver (Team)     | Gap       | Total Time  | Fast Lap  | Laps | Pits" +
     "\n-------------------------------------------------------------------------------";
 

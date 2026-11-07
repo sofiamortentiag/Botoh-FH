@@ -177,9 +177,8 @@ export function sendDiscordResult(message: string) {
     if (envName === "haxbula") {
       LOG_URL = LEAGUE_MODE ? LEAGUE_REPLAY_URL_HAXBULA : PUBLIC_REPLAY_URL;
     } else {
-      LOG_URL = LEAGUE_MODE ? LEAGUE_REPLAY_URL : PUBLIC_REPLAY_URL;
-    }
-    if (envName === "fh") {
+      // League replays are posted to the FH replay channel; keep the result
+      // message on that same webhook unless this is the Haxbula instance.
       LOG_URL = LEAGUE_MODE ? LEAGUE_REPLAY_URL_FH : PUBLIC_REPLAY_URL;
     }
 

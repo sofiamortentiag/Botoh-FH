@@ -1,6 +1,7 @@
 import { PitsInfo, playerList } from "../../../changePlayerState/playerList";
 import { vectorSpeed } from "../../../utils";
 import { refreshStandingsHtml } from "./standingsRefresh";
+import { isWecFinishPhase, wecFinishOrder } from "../../../changeGameState/EndRaceSession";
 
 export const positionList: {
   id: number;
@@ -66,6 +67,16 @@ export function updatePositionList(
 
   // Ordena a lista de posições com base nas voltas, setor atual e tempo total
   positionList.sort((a, b) => {
+    if (isWecFinishPhase()) {
+      const aFinishIndex = wecFinishOrder.indexOf(a.id);
+      const bFinishIndex = wecFinishOrder.indexOf(b.id);
+      if (aFinishIndex !== -1 || bFinishIndex !== -1) {
+        if (aFinishIndex === -1) return 1;
+        if (bFinishIndex === -1) return -1;
+        return aFinishIndex - bFinishIndex;
+      }
+    }
+
     if (a.lap === b.lap) {
       if (a.currentSector === b.currentSector) {
         return a.totalTime - b.totalTime; // quem tiver menos tempo, está na frente

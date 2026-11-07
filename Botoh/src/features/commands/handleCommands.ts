@@ -71,6 +71,7 @@ import { handleClearDebrisCommand } from "./debris/handleClearDebrisCommand";
 import { handleRadioCommand } from "./chat/handleRadioCommand";
 import { handleWModeCommand } from "./gameMode/wec/handleWModeCommand";
 import { handleWTimeCommand } from "./gameMode/wec/handleWTimeCommand";
+import { handleDriverChangeCommand } from "./gameMode/wec/handleDriverChangeCommand";
 import { handleUpgradeCommand } from "./scuderia/handleUpgradeCommand";
 import { handleBRModeCommand } from "./gameMode/battleRoyale.ts/handleBRModeCommand";
 import { handleBRTwoLapsCommand } from "./gameMode/battleRoyale.ts/handleBRTwoLapsCommand";
@@ -587,6 +588,10 @@ export const COMMANDS_BY_LANGUAGE = importCommandsByLanguage({
   pt: pt_commands,
 });
 
+Object.values(COMMANDS_BY_LANGUAGE).forEach((commands) => {
+  commands["!relevo"] = handleDriverChangeCommand;
+});
+
 export const COMMANDS: Commands = importCommands(
   en_commands,
   es_commands,
@@ -594,3 +599,6 @@ export const COMMANDS: Commands = importCommands(
   tr_commands,
   pt_commands,
 );
+
+// WEC driver swaps are available in every room language.
+COMMANDS["!relevo"] = handleDriverChangeCommand;
