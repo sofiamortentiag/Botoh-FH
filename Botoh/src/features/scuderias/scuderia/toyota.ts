@@ -52,6 +52,7 @@ export const Toyota: leagueScuderia = {
   name: 'Toyota',
   tag: 'TOY',
   color: ScuderiaColors.TOYOSSI,
+  series: 'F2',
   engine: ToyotaEngine,
   chassis: ToyotaChassis,
   batery: ToyotaBatery,

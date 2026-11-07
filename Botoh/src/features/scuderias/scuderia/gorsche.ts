@@ -52,6 +52,7 @@ export const Gorsche: leagueScuderia = {
   name: 'Gorsche',
   tag: 'GOR',
   color: ScuderiaColors.GORSCHE,
+  series: 'WEC',
   engine: GorscheEngine,
   chassis: GorscheChassis,
   batery: GorscheBatery,

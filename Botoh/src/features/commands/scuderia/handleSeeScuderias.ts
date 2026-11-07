@@ -5,12 +5,12 @@ export function handleSeeScuderias(
   args: string[],
   room: RoomObject
 ) {
-  let message = "Name | Tag\n-------------\n";
+  let message = "Name | Tag | Series\n-------------------\n";
 
   for (const scuderiaKey in leagueScuderia) {
     if (Object.prototype.hasOwnProperty.call(leagueScuderia, scuderiaKey)) {
       const scuderia = leagueScuderia[scuderiaKey];
-      message += `${scuderia.name} | ${scuderia.tag}\n`;
+      message += `${scuderia.name} | ${scuderia.tag} | ${scuderia.series ?? "—"}\n`;
     }
   }
 

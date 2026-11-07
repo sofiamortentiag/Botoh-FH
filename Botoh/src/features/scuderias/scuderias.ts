@@ -20,6 +20,23 @@ import { Williams } from "./scuderia/williams";
 import { Formula2 } from "./scuderia/f2";
 import { Gt } from "./scuderia/gt";
 import { Lmdh } from "./scuderia/lmdh";
+import { Audi } from "./scuderia/audi";
+import { AstonMartin } from "./scuderia/astonMartin";
+import { Schmidt } from "./scuderia/schmidt";
+import { Genesis } from "./scuderia/genesis";
+import { Manthey } from "./scuderia/manthey";
+import { JiRen } from "./scuderia/jiren";
+import { Hitech } from "./scuderia/hitech";
+import { Campos } from "./scuderia/campos";
+import { Invicta } from "./scuderia/invicta";
+import { Rodin } from "./scuderia/rodin";
+import { TF } from "./scuderia/tf";
+import { AF } from "./scuderia/af";
+import { Garage59 } from "./scuderia/garage59";
+import { TeamWRT } from "./scuderia/teamWrt";
+import { Prema } from "./scuderia/prema";
+
+export type ScuderiaSeries = "WEC" | "F2";
 
 export interface leagueScuderia {
   name: string;
@@ -30,6 +47,7 @@ export interface leagueScuderia {
   batery?: Batery;
   suspension?: Suspension;
   pitCrew?: PitCrew;
+  series?: ScuderiaSeries;
 }
 
 export const leagueScuderia: { [key: string]: leagueScuderia } = {
@@ -131,4 +149,19 @@ export const leagueScuderia: { [key: string]: leagueScuderia } = {
   Formula2,
   Gt,
   Lmdh,
+  Audi,
+  AstonMartin,
+  Schmidt,
+  Genesis,
+  Manthey,
+  JiRen,
+  Hitech,
+  Campos,
+  Invicta,
+  Rodin,
+  TF,
+  AF,
+  Garage59,
+  TeamWRT,
+  Prema,
 };

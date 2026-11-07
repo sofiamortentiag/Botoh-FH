@@ -52,6 +52,7 @@ export const Williams: leagueScuderia = {
   name: 'Williams',
   tag: 'WIL',
   color: ScuderiaColors.WILLIAMS,
+  series: 'WEC',
   engine: WilliamsEngine,
   chassis: WilliamsChassis,
   batery: WilliamsBatery,
