@@ -2,6 +2,8 @@ import { Circuit, CutSegment } from "../../circuits/Circuit";
 import {
   generalGameMode,
   GeneralGameMode,
+  gameMode,
+  GameMode,
 } from "../changeGameState/changeGameModes";
 import { playerList } from "../changePlayerState/playerList";
 import { sendAlertMessage } from "../chat/chat";
@@ -19,12 +21,15 @@ const DEFAULT_PENALTY_PUBLIC = 5;
 const DEFAULT_PENALTY_LEAGUE = 0;
 
 function decidePenalty(seg: any) {
-  const PENALTY =
-    LEAGUE_MODE && generalGameMode === GeneralGameMode.GENERAL_RACE
-      ? DEFAULT_PENALTY_LEAGUE
-      : (seg.penalty ?? DEFAULT_PENALTY_PUBLIC);
+  if (
+    LEAGUE_MODE &&
+    generalGameMode === GeneralGameMode.GENERAL_RACE &&
+    gameMode !== GameMode.WEC
+  ) {
+    return DEFAULT_PENALTY_LEAGUE;
+  }
 
-  return PENALTY;
+  return seg.penalty ?? DEFAULT_PENALTY_PUBLIC;
 }
 
 let cutSegments: CutSegment[] = [];
@@ -39,7 +44,7 @@ export function loadCutSegmentsFromCircuit(circuit: Circuit) {
     cutSegments = circuit.info.CutDetectSegments.map(
       (seg: any, index: number) => ({
         index,
-        penalty: decidePenalty(seg),
+        penalty: seg.penalty ?? DEFAULT_PENALTY_PUBLIC,
         v0: [seg.v0[0], seg.v0[1]],
         v1: [seg.v1[0], seg.v1[1]],
       }),
@@ -55,7 +60,7 @@ export function loadCutSegmentsFromCircuit(circuit: Circuit) {
         if (!v0 || !v1) return null;
         return {
           index,
-          penalty: decidePenalty(seg),
+          penalty: seg.penalty ?? DEFAULT_PENALTY_PUBLIC,
           v0: [v0.x, v0.y] as [number, number],
           v1: [v1.x, v1.y] as [number, number],
         };
@@ -125,7 +130,8 @@ export function detectCut(
         let realPenalty = decidePenalty(seg);
         if (
           room.getScores().time < 30 &&
-          generalGameMode === GeneralGameMode.GENERAL_RACE
+          generalGameMode === GeneralGameMode.GENERAL_RACE &&
+          gameMode !== GameMode.WEC
         ) {
           realPenalty = 0;
         }

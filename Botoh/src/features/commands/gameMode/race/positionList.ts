@@ -67,23 +67,24 @@ export function updatePositionList(
 
   // Ordena a lista de posições com base nas voltas, setor atual e tempo total
   positionList.sort((a, b) => {
+    // Completed laps are the primary WEC classification criterion, including
+    // during the checkered-flag phase. Finish order only breaks lap-count ties.
+    if (a.lap !== b.lap) return b.lap - a.lap;
+
     if (isWecFinishPhase()) {
       const aFinishIndex = wecFinishOrder.indexOf(a.id);
       const bFinishIndex = wecFinishOrder.indexOf(b.id);
       if (aFinishIndex !== -1 || bFinishIndex !== -1) {
         if (aFinishIndex === -1) return 1;
         if (bFinishIndex === -1) return -1;
-        return aFinishIndex - bFinishIndex;
+        if (aFinishIndex !== bFinishIndex) return aFinishIndex - bFinishIndex;
       }
     }
 
-    if (a.lap === b.lap) {
-      if (a.currentSector === b.currentSector) {
-        return a.totalTime - b.totalTime; // quem tiver menos tempo, está na frente
-      }
+    if (a.currentSector !== b.currentSector) {
       return b.currentSector - a.currentSector; // quem estiver mais à frente no setor
     }
-    return b.lap - a.lap; // quem completou mais voltas está na frente
+    return a.totalTime - b.totalTime; // quem tiver menos tempo, está na frente
   });
 
   if (shouldRefresh) refreshStandingsHtml();

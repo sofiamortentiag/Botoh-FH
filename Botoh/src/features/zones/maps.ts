@@ -112,6 +112,7 @@ import { ESTORIL } from "../../circuits/estoril/estoril";
 import { TIGRE } from "../../circuits/tigre/tigre";
 import { MUGELLO } from "../../circuits/mugello/mugello";
 import { MAX_TRACK } from "../../circuits/max_track/max_track";
+import { INTERLAGOSWEC } from "../../circuits/interlagos/interlagosWec";
 // import {DAYTONA} from "../circuits/daytona/daytona";
 // import {BARCELONA} from "../circuits/barcelona/barcelona";
 // import {MACAU} from "../circuits/macau/macau";
@@ -193,6 +194,7 @@ export const CIRCUITS: Circuit[] = LEAGUE_MODE
       TIGRE,
       MUGELLO,
       MAX_TRACK,
+      INTERLAGOSWEC,
       PODIUM,
       WAITROOM,
     ]
@@ -248,6 +250,7 @@ export const CIRCUITS: Circuit[] = LEAGUE_MODE
       BMW_RING,
       HUNGARY_NANO,
       SPANANO,
+      INTERLAGOSWEC,
       WAITROOM,
       WAITROOMQUALY,
     ];
