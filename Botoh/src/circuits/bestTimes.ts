@@ -73,7 +73,7 @@ const trackNameMapping: { [key: string]: string } = {
   tigre: "Circuito Nacional El Tigre By Nanoseb",
   mugello: "Autodromo Internazionale del Mugello by Quest",
   max_track: "Max VS 100 Silverstone Layout By Nanoseb",
-  interlagosWec: "Autodromo Jose Carlos Pace By Nanoseb",
+  interlagosWec: "Autodromo Jose Carlos Pace - New Gen By Nanoseb",
 };
 
 export const bestTimes: { [key: string]: [number, string, string] } = {
